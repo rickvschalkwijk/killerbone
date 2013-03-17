@@ -5,8 +5,8 @@
 
 create table user (
   user_id                   bigint auto_increment not null,
-  name                      varchar(255),
-  email                     varchar(255),
+  name                      varchar(50),
+  email                     varchar(50),
   password                  varchar(255),
   creation_date             datetime,
   constraint pk_user primary key (user_id))

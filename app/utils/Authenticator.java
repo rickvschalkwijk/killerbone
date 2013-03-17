@@ -1,10 +1,8 @@
 package utils;
 
 import org.joda.time.DateTime;
-
 import helpers.Common;
 import helpers.Cryptography;
-import models.User;
 
 public class Authenticator
 {
@@ -40,7 +38,7 @@ public class Authenticator
 		
 		// Validate userid
 		String valueUserId = keyValuePairs[0].substring(7);
-		if (Common.isNullOrEmpty(valueUserId) || Long.valueOf(valueUserId) != userId)
+		if (userId != 0 && (Common.isNullOrEmpty(valueUserId) || Long.valueOf(valueUserId) != userId))
 		{
 			return false;
 		}

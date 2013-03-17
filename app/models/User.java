@@ -1,8 +1,10 @@
 package models;
 
 import javax.persistence.*;
-
 import org.joda.time.DateTime;
+
+import com.avaje.ebean.validation.Length;
+
 import play.db.ebean.*;
 
 @Entity
@@ -11,9 +13,13 @@ public class User extends Model
 	private static final long serialVersionUID = 5854422586239724109L;
 
 	@Id
+	@GeneratedValue
 	public long userId;
-	public String name;	
+	@Length(max = 50)
+	public String name;
+	@Length(max = 50)
 	public String email;
+	@Length(max = 255)
 	public String password;
 	public DateTime creationDate;
 
