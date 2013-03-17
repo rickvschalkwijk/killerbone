@@ -1,9 +1,12 @@
-# Routes
-# This file defines all application routes (Higher priority routes first)
-# ~~~~
+# HTTP methods: GET, POST, PUT, DELETE, HEAD
 
-# Home page
-GET     /                           controllers.Application.index()
+# Application
+GET     /						controllers.Application.index()
+
+# User Management
+PUT		/user					controllers.UserManager.createUser()
+DELETE	/user/:id				controllers.UserManager.deleteUser(id : Long)
+POST 	/login					controllers.UserManager.loginUser()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
