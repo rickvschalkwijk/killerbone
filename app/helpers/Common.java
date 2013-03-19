@@ -1,5 +1,7 @@
 package helpers;
 
+import java.io.File;
+
 import play.Play;
 
 public class Common
@@ -29,6 +31,10 @@ public class Common
 		{
 			String rootPath = Play.application().path().getPath();
 			String resolvedPath = absolutePath.replace("~", rootPath);
+			
+			// Replace seperator with operating specific seperator
+			resolvedPath = resolvedPath.replace('/', File.separatorChar);
+			resolvedPath = resolvedPath.replace('\\', File.separatorChar);
 			
 			return resolvedPath;
 		}

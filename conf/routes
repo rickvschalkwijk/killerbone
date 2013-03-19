@@ -3,10 +3,11 @@
 # Application
 GET     /						controllers.Application.index()
 
-# User Management
-PUT		/user					controllers.UserManager.createUser()
-DELETE	/user/:id				controllers.UserManager.deleteUser(id : Long)
-POST 	/login					controllers.UserManager.loginUser()
+# Authentication
+POST	/authtoken				controllers.Authentication.createAuthToken()
 
-# Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+# User Management
+GET		/user/:id				controllers.UserManager.getUser(id : Long)
+POST	/user					controllers.UserManager.createUser()
+PUT		/user/:id				controllers.UserManager.updateUser(id : Long)
+DELETE	/user/:id				controllers.UserManager.deleteUser(id : Long)

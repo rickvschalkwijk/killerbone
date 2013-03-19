@@ -26,7 +26,7 @@ public class Authenticator
 	{
 		// Decrypt and validate authtoken
 		String authToken = Cryptography.decrypt(encryptedAuthToken);
-		if (Common.isNullOrEmpty(authToken) && authToken.matches(AUTH_TOKEN_REGEX))
+		if (Common.isNullOrEmpty(authToken) || !authToken.matches(AUTH_TOKEN_REGEX))
 		{
 			return false;
 		}

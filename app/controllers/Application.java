@@ -6,6 +6,6 @@ public class Application extends Controller
 {
 	public static Result index()
 	{
-		return ok("Application is online! ");
+		return ok("Application is online!");
 	}
 }
