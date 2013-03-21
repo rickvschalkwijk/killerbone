@@ -1,13 +1,26 @@
 # HTTP methods: GET, POST, PUT, DELETE, HEAD
 
 # Application
-GET     /						controllers.Application.index()
+GET     /							controllers.Application.index()
 
 # Authentication
-POST	/authtoken				controllers.Authentication.createAuthToken()
+POST	/authtoken					controllers.Authentication.createAuthToken()
 
-# User Management
-GET		/user/:id				controllers.UserManager.getUser(id : Long)
-POST	/user					controllers.UserManager.createUser()
-PUT		/user/:id				controllers.UserManager.updateUser(id : Long)
-DELETE	/user/:id				controllers.UserManager.deleteUser(id : Long)
+# User Manager
+GET		/user/:id					controllers.UserManager.getUser(id : Long)
+POST	/user						controllers.UserManager.createUser()
+PUT		/user/:id					controllers.UserManager.updateUser(id : Long)
+DELETE	/user/:id					controllers.UserManager.deleteUser(id : Long)
+
+# Friendship Manager
+GET		/friendships				controllers.FriendshipManager.getAllFriendships()
+GET		/friendship/:id				controllers.FriendshipManager.getFriendship(id : Long)
+POST	/friendship					controllers.FriendshipManager.createFriendship()
+POST	/friendship/answer/:id		controllers.FriendshipManager.answerFriendship(id : Long)
+DELETE	/friendship/:id				controllers.FriendshipManager.deleteFriendship(id : Long)
+
+# Locator
+
+# Event Manager
+
+# Location Manager
