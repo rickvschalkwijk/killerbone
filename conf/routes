@@ -19,8 +19,6 @@ PUT		/friendship/:friendshipId/accept/:userId 	controllers.FriendshipManager.acc
 PUT		/friendship/:friendshipId/decline/:userId 	controllers.FriendshipManager.declineFriendship(friendshipId : Long, userId : Long)
 PUT		/friendship/:friendshipId/end/:userId		controllers.FriendshipManager.endFriendship(friendshipId : Long, userId : Long)
 
-# Locator
-
-# Event Manager
-
-# Location Manager
+# Development
+GET		/development/allusers						controllers.Development.getAllUsers()
+GET		/development/allfriendships					controllers.Development.getAllFriendships()

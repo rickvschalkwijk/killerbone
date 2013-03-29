@@ -74,18 +74,18 @@ public class FriendshipManager extends Controller
 		}
 
 		// Gather required friendship request information
-		String fromId = XPath.selectText("/friendshipRequest/fromId", xmlDocument).trim();
-		String toId = XPath.selectText("/friendshipRequest/toId", xmlDocument).trim();
+		String initiatorId = XPath.selectText("/friendshipRequest/initiatorId", xmlDocument).trim();
+		String participantId = XPath.selectText("/friendshipRequest/participantId", xmlDocument).trim();
 
 		// Validate friendship request information
-		if (!validator.validateNumeric(fromId) || !validator.validateNumeric(toId) || fromId.equals(toId))
+		if (!validator.validateNumeric(initiatorId) || !validator.validateNumeric(participantId) || initiatorId.equals(participantId))
 		{
 			return badRequest(message.render("INVALID_FRIENDSHIP_CREATE_INFO", ""));
 		}
 
 		// Get involved users
-		User initiator = User.find.byId(Long.valueOf(fromId));
-		User participant = User.find.byId(Long.valueOf(toId));
+		User initiator = User.find.byId(Long.valueOf(initiatorId));
+		User participant = User.find.byId(Long.valueOf(participantId));
 
 		boolean operationSucceeded = false;
 		if (initiator != null && participant != null)

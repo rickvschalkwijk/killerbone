@@ -3,8 +3,8 @@
   <xs:element name="friendshipRequest">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="fromId" type="xs:integer" />
-        <xs:element name="toId" type="xs:integer" />
+        <xs:element name="initiatorId" type="xs:integer" />
+        <xs:element name="participantId" type="xs:integer" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

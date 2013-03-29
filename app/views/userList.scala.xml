@@ -9,6 +9,9 @@
 			<email>
 			    @user.email
 			</email>
+			<password>
+			    @user.password
+			</password>			
 		</user>
 	} 
 </users>
