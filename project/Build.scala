@@ -5,7 +5,7 @@ import play.Project._
 object ApplicationBuild extends Build {
 
   val appName         = "KillerBone"
-  val appVersion      = "1.0-SNAPSHOT"
+  val appVersion      = "0.2a"
 
   val appDependencies = Seq(
     // Add your project dependencies here,

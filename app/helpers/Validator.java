@@ -2,11 +2,17 @@ package helpers;
 
 public class Validator
 {
+	private final String NUMERIC_REGEX = ".{0,50}";
 	private final String NAME_REGEX = ".{0,50}";
 	private final String EMAIL_REGEX = ".+\\@.+\\..+";
 	private final String PASSWORD_REGEX = "^[a-zA-Z]\\w{3,14}$";
 	
 	//-----------------------------------------------------------------------//
+	
+	public boolean validateNumeric(String numeric)
+	{
+		return (!Common.isNullOrEmpty(numeric) && numeric.matches(NUMERIC_REGEX));
+	}
 	
 	public boolean validateName(String name)
 	{

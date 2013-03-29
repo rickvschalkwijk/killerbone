@@ -3,7 +3,6 @@ package models;
 import javax.persistence.*;
 import org.joda.time.DateTime;
 import com.avaje.ebean.annotation.EnumMapping;
-import com.avaje.ebean.validation.Length;
 import play.data.format.Formats;
 import play.db.ebean.*;
 
@@ -23,12 +22,15 @@ public class Friendship extends Model
 	public User participant;
 	
 	public FriendshipStatus status;
-
-	@Length(max = 6)
-	public String confirmationCode;
+	
+	@Formats.DateTime(pattern = "dd-MM-yyyy")
+	public DateTime requestDate;
 	
 	@Formats.DateTime(pattern = "dd-MM-yyyy")
 	public DateTime approvalDate;
+	
+	@Formats.DateTime(pattern = "dd-MM-yyyy")
+	public DateTime endDate;
 	
 	public Friendship()
 	{
@@ -36,21 +38,20 @@ public class Friendship extends Model
 		status = FriendshipStatus.PENDING;
 	}
 	
-	public Friendship(User initiator, User participant, String confirmationCode)
+	public Friendship(User initiator, User participant)
 	{
 		this();		
 		
 		this.initiator = initiator;
 		this.participant = participant;
-		this.confirmationCode = confirmationCode;
 	}
 	
 	// -----------------------------------------------------------------------//
 
-	@EnumMapping(nameValuePairs = "PENDING=P, SENT=S, APPROVED=A, DECLINED=D")
+	@EnumMapping(nameValuePairs = "PENDING=P, SENT=S, APPROVED=A, DECLINED=D, ENDED=E")
 	public enum FriendshipStatus
 	{
-		PENDING, SENT, APPROVED, DECLINED
+		PENDING, SENT, APPROVED, DECLINED, ENDED
 	}
 	
 	public static Finder<Long, Friendship> find = new Finder<Long, Friendship>(

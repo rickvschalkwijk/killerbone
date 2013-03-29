@@ -1,9 +1,10 @@
+@(code : String, content : String)
 <?xml version="1.0" encoding="UTF-8" ?>
 <message>
     <code>
-   		<!-- CODE -->	     
+   		@code	     
     </code>
     <content>
-     	<!-- CONTENT -->   
+     	@content  
     </content>
 </message>

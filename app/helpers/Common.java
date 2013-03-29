@@ -21,6 +21,20 @@ public class Common
 	}
 	
 	/**
+	 * Converts a null string to an empty string
+	 * @param string
+	 * @return
+	 */
+	public static String ensureNotNull(String string)
+	{
+		if (string == null)
+		{
+			return "";
+		}
+		return string;
+	}
+	
+	/**
 	 * Converts a relative path to an absolute path
 	 * @param String
 	 * @return String

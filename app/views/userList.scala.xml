@@ -1,0 +1,14 @@
+@(users : List[User])
+<?xml version="1.0" encoding="UTF-8" ?>
+<users>
+    @for(user <- users) {
+		<user id="@user.userId">
+			<name>
+			    @user.name
+			</name>
+			<email>
+			    @user.email
+			</email>
+		</user>
+	} 
+</users>

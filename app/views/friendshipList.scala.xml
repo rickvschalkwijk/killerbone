@@ -1,0 +1,21 @@
+@(friendships : List[Friendship])
+<?xml version="1.0" encoding="UTF-8" ?>
+<friendships>
+    @for(friendship <- friendships) {
+  		<friendship id="@friendship.friendshipId">
+  		    <initiator id="@friendship.initiator.userId">
+				<name>
+				    @friendship.initiator.name
+				</name>
+  		    </initiator>
+  		    <participant id="@friendship.participant.userId">
+  		     	<name>
+  		     	    @friendship.participant.name
+  		     	</name>
+  		    </participant>
+  		    <status>
+  		        @friendship.status
+  		    </status>
+  		</friendship>
+	} 
+</friendships>

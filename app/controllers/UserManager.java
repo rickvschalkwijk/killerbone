@@ -1,26 +1,27 @@
 package controllers;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.File;
 import helpers.Common;
 import helpers.Server;
 import models.User;
 import org.joda.time.DateTime;
 import org.w3c.dom.Document;
+
+import play.api.Play;
 import play.libs.XPath;
 import play.mvc.*;
 import utils.Authenticator;
 import helpers.Validator;
 import utils.XmlProcessor;
+import views.xml.*;
 
 public class UserManager extends Controller
 {
 	public static Result getUser(long userId)
 	{
-		XmlProcessor xml = new XmlProcessor();
 		Authenticator authenticator = new Authenticator();
 		
-		// Users may only delete their own account, having a valid authtoken
+		// Users may only get their own account, having a valid authtoken
 		String authToken = Server.getHeaderValue("AuthToken");
 		if (authenticator.validateAuthToken(userId, authToken))
 		{
@@ -28,19 +29,11 @@ public class UserManager extends Controller
 			User user = User.find.byId(userId);
 			if (user != null)
 			{
-				Map<String, String> templateValues = new HashMap<String, String>();
-				templateValues.put("userid", String.valueOf(user.userId));
-				templateValues.put("name", user.name);
-				templateValues.put("email", user.email);
-				
-				String pathToUserTemplate = "~/app/assets/xml/user.xml";
-				String xmlMessage = xml.composeXmlMessage(pathToUserTemplate, templateValues);
-				return ok(xmlMessage).as("text/xml");
+				return ok(userSingle.render(user));
 			}
 		}
 		
-		String xmlMessage = xml.composeXmlMessage("USER_NOT_FOUND", "", null);
-		return ok(xmlMessage).as("text/xml");
+		return ok(message.render("USER_NOT_FOUND", ""));
 	}
 	
 	//-----------------------------------------------------------------------//
@@ -52,13 +45,12 @@ public class UserManager extends Controller
 		Document xmlDocument = request().body().asXml();
 		
 		// Validate xml document
-		String pathToXsd = Common.resolvePath("~/app/assets/xsd/createUser.xsd");
-		boolean isValidXml = xml.validateXmlAgainstXsd(xmlDocument, pathToXsd);
+		File xsdFile = Play.current().getFile("/public/xsd/userCreate.xsd");
+		boolean isValidXml = xml.validateXmlAgainstXsd(xmlDocument, xsdFile.getAbsolutePath());	
 		
 		if (!isValidXml)
 		{
-			String xmlResponse = xml.composeXmlMessage("INVALID_XML_FORMAT", "", null);
-			return badRequest(xmlResponse).as("text/xml");
+			return badRequest(message.render("INVALID_XML_FORMAT", ""));
 		}
 		
 		// Gather required user information
@@ -66,25 +58,21 @@ public class UserManager extends Controller
 		String email = XPath.selectText("/user/email", xmlDocument).trim();
 		String password = XPath.selectText("/user/password", xmlDocument).trim();
 		
+		boolean operationSucceeded = false;
+		
 		// Validate user information
-		if (!validator.validateName(name) || !validator.validateEmail(email) || !validator.validatePassword(password))
+		if (validator.validateName(name) || validator.validateEmail(email) || validator.validatePassword(password))
 		{
-			String xmlResponse = xml.composeXmlMessage("INVALID_USER_INFO", "", null);
-			return badRequest(xmlResponse).as("text/xml");
+			// Create new user
+			User newUser = new User(name, email, password, DateTime.now());
+			newUser.save();
+			
+			operationSucceeded = (newUser.userId > 0);
 		}
-		
-		// Create new user
-		User newUser = new User(name, email, password, DateTime.now());
-		newUser.save();
-
-		// Verify if create operation succeeded
-		boolean operationSucceeded = (newUser.userId > 0);
-		
+				
 		// Respond with xml message
 		String messageCode = (operationSucceeded ? "USER_CREATE_SUCCESS" : "USER_CREATE_FAILED");
-		String xmlMessage = xml.composeXmlMessage(messageCode, String.valueOf(newUser.userId), null);
-		
-		return ok(xmlMessage).as("text/xml");
+		return ok(message.render(messageCode, ""));
 	}
 	
 	//-----------------------------------------------------------------------//
@@ -96,13 +84,12 @@ public class UserManager extends Controller
 		Document xmlDocument = request().body().asXml();
 		
 		// Validate xml document
-		String pathToXsd = Common.resolvePath("~/app/assets/xsd/updateUser.xsd");
-		boolean isValidXml = xml.validateXmlAgainstXsd(xmlDocument, pathToXsd);		
+		File xsdFile = Play.current().getFile("/public/xsd/userUpdate.xsd");
+		boolean isValidXml = xml.validateXmlAgainstXsd(xmlDocument, xsdFile.getAbsolutePath());	
 		
 		if (!isValidXml)
 		{
-			String xmlResponse = xml.composeXmlMessage("INVALID_XML_FORMAT", "", null);
-			return badRequest(xmlResponse).as("text/xml");
+			return badRequest(message.render("INVALID_XML_FORMAT", ""));
 		}
 		
 		boolean operationSucceeded = false;
@@ -129,18 +116,14 @@ public class UserManager extends Controller
 			}
 		}
 		
-		// Respond with xml message
 		String messageCode = (operationSucceeded ? "USER_UPDATE_SUCCESS" : "USER_UPDATE_FAILED");
-		String xmlMessage = xml.composeXmlMessage(messageCode, "", null);
-		
-		return ok(xmlMessage).as("text/xml");
+		return ok(message.render(messageCode, ""));
 	}
 
 	//-----------------------------------------------------------------------//
 	
 	public static Result deleteUser(long userId)
 	{
-		XmlProcessor xml = new XmlProcessor();
 		Authenticator authenticator = new Authenticator();
 		
 		boolean operationSucceeded = false;
@@ -159,10 +142,7 @@ public class UserManager extends Controller
 			operationSucceeded = (user != null && User.find.byId(userId) == null);
 		}	
 		
-		// Respond with xml message
 		String messageCode = (operationSucceeded ? "USER_DELETE_SUCCESS" : "USER_DELETE_FAILED");
-		String xmlMessage = xml.composeXmlMessage(messageCode, "", null);
-		
-		return ok(xmlMessage).as("text/xml");
+		return ok(message.render(messageCode, ""));
 	}
 }

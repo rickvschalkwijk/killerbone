@@ -35,16 +35,16 @@ public class User extends Model
 	public DateTime creationDate;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "initiator")
-	public Set<Friendship> initiatedFriendships;
+	public List<Friendship> initiatedFriendships;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "participant")
-	public Set<Friendship> participatedFriendships;
+	public List<Friendship> participatedFriendships;
 	
 	public User()
 	{
 		// Default values
-		initiatedFriendships = new HashSet<Friendship>();
-		participatedFriendships = new HashSet<Friendship>();
+		initiatedFriendships = new ArrayList<Friendship>();
+		participatedFriendships = new ArrayList<Friendship>();
 	}
 	
 	public User(String name, String email, String password, DateTime creationDate)
