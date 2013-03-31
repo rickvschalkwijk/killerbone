@@ -1,0 +1,11 @@
+@(categories : List[EventCategory])
+<?xml version="1.0" encoding="UTF-8" ?>
+<categories>
+    @for(category <- categories) {
+		<category id="@category.systemName">
+			<title>
+			    @category.title
+			</title>		
+		</category>
+	} 
+</categories>

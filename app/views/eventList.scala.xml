@@ -1,0 +1,39 @@
+@(events : List[Event])
+<?xml version="1.0" encoding="UTF-8" ?>
+<events>
+    @for(event <- events) {
+		<event id="@event.eventId">
+			<title>
+			    @event.title
+			</title>
+			<description>
+			    @event.description
+			</description>
+			<category>
+			    @event.category.systemName
+			</category>
+			<location>
+			    <latitude>
+			    	@event.latitude   
+			    </latitude>
+			    <longitude>
+			        @event.longitude
+			    </longitude>
+			</location>
+			<duration>
+			    <start>
+			        @event.startDate
+			    </start>
+			    <end>
+			        @event.endDate
+			    </end>
+			</duration>
+			<free>
+			    @event.isFree
+			</free>
+			<price>
+			    @event.price
+			</price>
+		</event>
+	} 
+</events>
