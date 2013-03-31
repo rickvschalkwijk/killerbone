@@ -1,13 +1,9 @@
 package helpers;
 
-import java.io.File;
-
-import play.Play;
-
 public class Common
 {
 	/**
-	 * Checks if string is null or empty
+	 * Checks if string is null or empty.
 	 * @param String
 	 * @return boolean
 	 */
@@ -21,9 +17,9 @@ public class Common
 	}
 	
 	/**
-	 * Converts a null string to an empty string
-	 * @param string
-	 * @return
+	 * Converts a null string to an empty string.
+	 * @param String
+	 * @return String
 	 */
 	public static String ensureNotNull(String string)
 	{
@@ -32,29 +28,5 @@ public class Common
 			return "";
 		}
 		return string;
-	}
-	
-	/**
-	 * Converts a relative path to an absolute path
-	 * @param String
-	 * @return String
-	 */
-	public static String resolvePath(String absolutePath)
-	{
-		if (!isNullOrEmpty(absolutePath) && absolutePath.startsWith("~"))
-		{
-			String rootPath = Play.application().path().getPath();
-			String resolvedPath = absolutePath.replace("~", rootPath);
-			
-			// Replace seperator with operating specific seperator
-			resolvedPath = resolvedPath.replace('/', File.separatorChar);
-			resolvedPath = resolvedPath.replace('\\', File.separatorChar);
-			
-			return resolvedPath;
-		}
-		else
-		{
-			return absolutePath;
-		}		
 	}
 }

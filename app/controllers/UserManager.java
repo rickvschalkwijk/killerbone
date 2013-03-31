@@ -21,7 +21,7 @@ public class UserManager extends Controller
 	{
 		Authenticator authenticator = new Authenticator();
 		
-		// Users may only get their own account, having a valid authtoken
+		// Users may only get information about their own account
 		String authToken = Server.getHeaderValue("AuthToken");
 		if (authenticator.validateAuthToken(userId, authToken))
 		{
@@ -33,7 +33,7 @@ public class UserManager extends Controller
 			}
 		}
 		
-		return ok(message.render("USER_NOT_FOUND", ""));
+		return ok(message.render("USER_GET_FAILED", ""));
 	}
 	
 	//-----------------------------------------------------------------------//
@@ -50,7 +50,7 @@ public class UserManager extends Controller
 		
 		if (!isValidXml)
 		{
-			return badRequest(message.render("INVALID_XML_FORMAT", ""));
+			return badRequest(message.render("XML_INVALID", ""));
 		}
 		
 		// Gather required user information
@@ -89,7 +89,7 @@ public class UserManager extends Controller
 		
 		if (!isValidXml)
 		{
-			return badRequest(message.render("INVALID_XML_FORMAT", ""));
+			return badRequest(message.render("XML_INVALID", ""));
 		}
 		
 		boolean operationSucceeded = false;

@@ -1,24 +1,36 @@
 # HTTP methods: GET, POST, PUT, DELETE, HEAD
 
 # Application
-GET     /											controllers.Application.index()
+GET     /												controllers.Application.index()
 
 # Authentication
-POST	/authtoken									controllers.Authentication.createAuthToken()
+POST	/authtoken										controllers.Authentication.createAuthToken()
 
 # User Manager
-GET		/user/:userId								controllers.UserManager.getUser(userId : Long)
-POST	/user										controllers.UserManager.createUser()
-PUT		/user/:userId								controllers.UserManager.updateUser(userId : Long)
-DELETE	/user/:userId								controllers.UserManager.deleteUser(userId : Long)
+GET		/user/:userId									controllers.UserManager.getUser(userId : Long)
+POST	/user											controllers.UserManager.createUser()
+PUT		/user/:userId									controllers.UserManager.updateUser(userId : Long)
+DELETE	/user/:userId									controllers.UserManager.deleteUser(userId : Long)
 
 # Friendship Manager
-GET		/friendships/:userId						controllers.FriendshipManager.getUserFriendships(userId : Long)
-POST	/friendship									controllers.FriendshipManager.createFriendship()
-PUT		/friendship/:friendshipId/accept/:userId 	controllers.FriendshipManager.acceptFriendship(friendshipId : Long, userId : Long)
-PUT		/friendship/:friendshipId/decline/:userId 	controllers.FriendshipManager.declineFriendship(friendshipId : Long, userId : Long)
-PUT		/friendship/:friendshipId/end/:userId		controllers.FriendshipManager.endFriendship(friendshipId : Long, userId : Long)
+GET		/friendships/:userId							controllers.FriendshipManager.getUserFriendships(userId : Long)
+POST	/friendship										controllers.FriendshipManager.createFriendship()
+PUT		/friendship/:friendshipId/accept/:userId 		controllers.FriendshipManager.acceptFriendship(friendshipId : Long, userId : Long)
+PUT		/friendship/:friendshipId/decline/:userId 		controllers.FriendshipManager.declineFriendship(friendshipId : Long, userId : Long)
+PUT		/friendship/:friendshipId/end/:userId			controllers.FriendshipManager.endFriendship(friendshipId : Long, userId : Long)
+
+# Event Manager
+GET		/events											controllers.EventManager.getAllEvents()
+GET		/events/new/:timestamp							controllers.EventManager.getNewEvents(timestamp : Long)
+GET		/events/:category								controllers.EventManager.getAllEventsFromCategory(category : String)
+GET		/events/:category/new/:timestamp				controllers.EventManager.getNewEventsFromCategory(category : String, timestamp : Long)
+GET		/events/categories								controllers.EventManager.getAllCategories()
 
 # Development
-GET		/development/allusers						controllers.Development.getAllUsers()
-GET		/development/allfriendships					controllers.Development.getAllFriendships()
+GET		/development/allusers							controllers.Development.getAllUsers()
+GET		/development/allfriendships						controllers.Development.getAllFriendships()
+GET		/development/allevents							controllers.Development.getAllEvents()
+GET		/development/allcategories						controllers.Development.getAllCategories()
+GET		/development/populatecategories					controllers.Development.populateCategoriesTable()
+GET		/development/populateevents						controllers.Development.populateEventsTable()
+

@@ -1,5 +1,7 @@
 package utils;
 
+import org.joda.time.DateTime;
+
 import play.Logger;
 
 import com.evdb.javaapi.EVDBAPIException;
@@ -10,46 +12,52 @@ import com.evdb.javaapi.operations.EventOperations;
 
 public class EventfulApi
 {
-	public SearchResult PerformSearch(String keywords)
+	/**
+	 * Performs an eventful api event search.
+	 * @param String
+	 * @param String
+	 * @param String
+	 * @return SearchResult
+	 */
+	public SearchResult performEventSearch(String location, String categoryId, String dateRange)
 	{	
 		EventOperations eo = new EventOperations();
 		EventSearchRequest esr = new EventSearchRequest();
 		
-		esr.setLocation("Amsterdam");
-		esr.setDateRange("2012050200-2013052100");
-		esr.setPageSize(20);
-		esr.setPageNumber(1);
+		// Compose search action
+		esr.setLocation(location);
+		esr.setDateRange(dateRange);
+		esr.setCategory(categoryId);
+		esr.setPageSize(999);
 
+		// Perform search
 		SearchResult sr = null;
 		try
 		{
-			sr = eo.search(esr);
-			if (sr.getTotalItems() > 1)
-			{
-				return sr;
-			}
+			sr = eo.search(esr);			
 		}
 		catch (EVDBRuntimeException var)
 		{
-			Logger.info(var.getMessage());
+			Logger.error(var.getMessage());
 		}
 		catch (EVDBAPIException var)
 		{
-			Logger.info(var.getMessage());
+			Logger.error(var.getMessage());
 		}
 		
-		return null;
+		return sr;
 	}
 	
 	//-----------------------------------------------------------------------//
 	
-	public void RepopulateEventTable()
+	/**
+	 * Converts dates to an eventful api compatible daterange string.
+	 * @param DateTime
+	 * @param DateTime
+	 * @return String
+	 */
+	public String convertToDateRange(DateTime from, DateTime until)
 	{
-		
-	}
-	
-	public void DeleteAllEvents()
-	{
-		
+		return String.format("%s-%s", from.toString("yyyyMMdd00"), until.toString("yyyyMMdd00"));
 	}
 }

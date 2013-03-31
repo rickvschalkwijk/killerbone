@@ -26,7 +26,7 @@ public class Authentication extends Controller
 		
 		if (!isValidXml)
 		{
-			return ok(message.render("INVALID_XML_FORMAT", ""));
+			return ok(message.render("XML_INVALID", ""));
 		}
 
 		// Gather required user information
@@ -43,7 +43,7 @@ public class Authentication extends Controller
 		}
 		else
 		{
-			return ok(message.render("USER_LOGIN_FAILED", ""));
+			return ok(message.render("AUTHTOKEN_CREATE_FAILED", ""));
 		}		
 	}
 }

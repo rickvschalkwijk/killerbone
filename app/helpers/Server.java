@@ -7,6 +7,11 @@ import play.mvc.Http.Request;
 
 public class Server
 {
+	/**
+	 * Get a HTTP header value.
+	 * @param String
+	 * @return String
+	 */
 	public static String getHeaderValue(String header)
 	{
 		Request currentRequest = Http.Context.current().request();
@@ -18,16 +23,4 @@ public class Server
 		}
 		return null;
 	}
-	
-	public static String[] getHeaderValues(String header)
-	{
-		Request currentRequest = Http.Context.current().request();
-		Map<String, String[]> headers = currentRequest.headers();
-		
-		if (headers.containsKey(header))
-		{
-			return headers.get(header);
-		}
-		return null;
-	}	
 }

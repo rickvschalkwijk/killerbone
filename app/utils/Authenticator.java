@@ -9,6 +9,13 @@ public class Authenticator
 	private final String AUTH_TOKEN_PREFIX = "_authtoken";
 	private final String AUTH_TOKEN_REGEX = ".*@(\\[\\w{6}:([0-9a-zA-Z]+)]\\+?)*";
 	
+	//-----------------------------------------------------------------------//
+	
+	/**
+	 * Generates an user authtoken.
+	 * @param long
+	 * @return String
+	 */
 	public String generateAuthToken(long userId)
 	{
 		// Calculate expiration datetime
@@ -22,6 +29,12 @@ public class Authenticator
 		return Cryptography.encrypt(authToken);
 	}
 	
+	/**
+	 * Validates an user authtoken.
+	 * @param long
+	 * @param String
+	 * @return boolean
+	 */
 	public boolean validateAuthToken(long userId, String encryptedAuthToken)
 	{
 		// Decrypt and validate authtoken

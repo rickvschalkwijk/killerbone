@@ -6,13 +6,23 @@
 create table event (
   event_id                  bigint auto_increment not null,
   title                     varchar(255),
-  latitude                  double,
-  longitude                 double,
+  description               TEXT,
   start_date                datetime,
   end_date                  datetime,
+  category_event_category_id bigint,
+  latitude                  double,
+  longitude                 double,
   is_free                   tinyint(1) default 0,
   price                     double,
+  creation_timestamp        bigint,
   constraint pk_event primary key (event_id))
+;
+
+create table event_category (
+  event_category_id         bigint auto_increment not null,
+  title                     varchar(255),
+  system_name               varchar(255),
+  constraint pk_event_category primary key (event_category_id))
 ;
 
 create table friendship (
@@ -37,10 +47,12 @@ create table user (
   constraint pk_user primary key (user_id))
 ;
 
-alter table friendship add constraint fk_friendship_initiator_1 foreign key (initiator_user_id) references user (user_id) on delete restrict on update restrict;
-create index ix_friendship_initiator_1 on friendship (initiator_user_id);
-alter table friendship add constraint fk_friendship_participant_2 foreign key (participant_user_id) references user (user_id) on delete restrict on update restrict;
-create index ix_friendship_participant_2 on friendship (participant_user_id);
+alter table event add constraint fk_event_category_1 foreign key (category_event_category_id) references event_category (event_category_id) on delete restrict on update restrict;
+create index ix_event_category_1 on event (category_event_category_id);
+alter table friendship add constraint fk_friendship_initiator_2 foreign key (initiator_user_id) references user (user_id) on delete restrict on update restrict;
+create index ix_friendship_initiator_2 on friendship (initiator_user_id);
+alter table friendship add constraint fk_friendship_participant_3 foreign key (participant_user_id) references user (user_id) on delete restrict on update restrict;
+create index ix_friendship_participant_3 on friendship (participant_user_id);
 
 
 
@@ -49,6 +61,8 @@ create index ix_friendship_participant_2 on friendship (participant_user_id);
 SET FOREIGN_KEY_CHECKS=0;
 
 drop table event;
+
+drop table event_category;
 
 drop table friendship;
 

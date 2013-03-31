@@ -25,6 +25,11 @@ public class Cryptography
 	
 	//-----------------------------------------------------------------------//
 	
+	/**
+	 * Performs an encryption operation.
+	 * @param String
+	 * @return String
+	 */
 	public static String encrypt(String data)
 	{
 		SecretKey secret = getCryptographyKey();
@@ -50,6 +55,11 @@ public class Cryptography
 		return null;
 	}
 	
+	/**
+	 * Performs a decryption operation.
+	 * @param String
+	 * @return String
+	 */
 	public static String decrypt(String data)
 	{
 		SecretKey secret = getCryptographyKey();
@@ -75,6 +85,13 @@ public class Cryptography
 		return null;
 	}
 	
+	/**
+	 * Compiles the key used for cryptography.
+	 * @param String
+	 * @param String
+	 * @param int
+	 * @return SecretKey
+	 */
 	private static SecretKey compileSecretKey(String password, String salt, int keyLength)
 	{
 		try
@@ -96,6 +113,10 @@ public class Cryptography
 	
 	//-----------------------------------------------------------------------//
 	
+	/**
+	 * Gets the key used for cryptography.
+	 * @return SecretKey
+	 */
 	public static SecretKey getCryptographyKey()
 	{
 		if (cryptographyKey == null)

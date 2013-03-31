@@ -6,6 +6,7 @@ import com.typesafe.config.ConfigFactory;
 import play.*;
 import play.mvc.Http.RequestHeader;
 import play.mvc.*;
+import views.xml.message;
 
 public class Global extends GlobalSettings
 {
@@ -27,9 +28,6 @@ public class Global extends GlobalSettings
 	@Override
 	public Result onBadRequest(RequestHeader request, String error)
 	{
-		XmlProcessor xml = new XmlProcessor();
-
-		String xmlMessage = xml.composeXmlMessage("INVALID_REQUEST", error, null);
-		return Results.badRequest(xmlMessage).as("text/xml");
+		return Results.badRequest(message.render("INVALID_REQUEST", ""));
 	}
 }
