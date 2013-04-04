@@ -2,6 +2,7 @@
 
 # Application
 GET     /												controllers.Application.index()
+GET		/eventful/repopulate							controllers.Application.repopulateEventfulContent()
 
 # Authentication
 POST	/authtoken										controllers.Authentication.createAuthToken()

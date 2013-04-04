@@ -20,25 +20,25 @@ public class Development extends Controller
 	public static Result getAllUsers()
 	{
 		List<User> allUsers = User.find.all();
-		return ok(userList.render(allUsers));
+		return ok(userList.render(allUsers).body().trim()).as("text/xml");
 	}
 	
 	public static Result getAllFriendships()
 	{
 		List<Friendship> allFriendships = Friendship.find.all();
-		return ok(friendshipList.render(allFriendships));
+		return ok(friendshipList.render(allFriendships).body().trim()).as("text/xml");
 	}	
 	
 	public static Result getAllEvents()
 	{
 		List<Event> allEvents = Event.find.all();
-		return ok(eventList.render(allEvents));
+		return ok(eventList.render(allEvents).body().trim()).as("text/xml");
 	}
 	
 	public static Result getAllCategories()
 	{
 		List<EventCategory> allEventCategories = EventCategory.find.all();
-		return ok(categoryList.render(allEventCategories));
+		return ok(categoryList.render(allEventCategories).body().trim()).as("text/xml");
 	}
 	
 	//-----------------------------------------------------------------------//

@@ -5,6 +5,7 @@
 
 create table event (
   event_id                  bigint auto_increment not null,
+  eventful_id               varchar(255),
   title                     varchar(255),
   description               TEXT,
   start_date                datetime,
@@ -13,8 +14,10 @@ create table event (
   latitude                  double,
   longitude                 double,
   is_free                   tinyint(1) default 0,
-  price                     double,
+  price                     varchar(255),
   creation_timestamp        bigint,
+  modified_timestamp        bigint,
+  constraint uq_event_eventful_id unique (eventful_id),
   constraint pk_event primary key (event_id))
 ;
 
@@ -35,6 +38,14 @@ create table friendship (
   end_date                  datetime,
   constraint ck_friendship_status check (status in ('S','P','E','A','D')),
   constraint pk_friendship primary key (friendship_id))
+;
+
+create table setting (
+  setting_id                bigint auto_increment not null,
+  setting_key               varchar(50),
+  setting_value             varchar(255),
+  constraint uq_setting_setting_key unique (setting_key),
+  constraint pk_setting primary key (setting_id))
 ;
 
 create table user (
@@ -65,6 +76,8 @@ drop table event;
 drop table event_category;
 
 drop table friendship;
+
+drop table setting;
 
 drop table user;
 

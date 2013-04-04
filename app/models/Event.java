@@ -1,5 +1,6 @@
 package models;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -24,6 +25,9 @@ public class Event extends Model
 	@GeneratedValue
 	public long eventId;
 	
+	@Column(unique = true)
+	public String eventfulId;
+	
 	@Length(max = 255)
 	public String title;
 
@@ -36,26 +40,28 @@ public class Event extends Model
 	@Formats.DateTime(pattern = "dd-MM-yyyy HH:mm")
 	public DateTime endDate;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
 	public EventCategory category;
 	
 	public double latitude;
 	public double longitude;	
 	
 	public boolean isFree;
-	public double price;
+	public String price;
 	
 	public long creationTimestamp;
+	public long modifiedTimestamp;
 	
 	public Event()
 	{
 		// Default values
 	}
 	
-	public Event(String title, String description, double latitude, double longitude, DateTime startDate, DateTime endDate, double price)
+	public Event(String eventfulId, String title, String description, double latitude, double longitude, DateTime startDate, DateTime endDate, String price, boolean isFree)
 	{
 		this();
 		
+		this.eventfulId = eventfulId;
 		this.title = title;
 		this.description = description;
 		this.latitude = latitude;
@@ -63,21 +69,22 @@ public class Event extends Model
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.price = price;
-		isFree = (price == 0);
+		this.isFree = isFree;
 	}
 	
 	public Event(com.evdb.javaapi.data.Event event, EventCategory category)
 	{
 		this();
 		
-		title = StringEscapeUtils.unescapeHtml4(event.getTitle());
-		description = StringEscapeUtils.unescapeHtml4((event.getDescription()));
+		eventfulId = event.getSeid();
+		title = StringEscapeUtils.unescapeHtml4(event.getTitle().trim());
+		description = StringEscapeUtils.unescapeHtml4(event.getDescription().trim());
 		latitude = event.getVenueLatitude();
 		longitude = event.getVenueLongitude();
 		startDate = new DateTime(event.getStartTime());	
-		endDate = (event.getStopTime() != null ? new DateTime(event.getStopTime()) : null);
-		price = 0;
-		isFree = (price == 0);
+		endDate = (event.getStopTime() != null ? new DateTime(event.getStopTime()) : startDate);
+		price = event.getPrice();
+		isFree = event.isFree();
 		
 		this.category = category;
 	}

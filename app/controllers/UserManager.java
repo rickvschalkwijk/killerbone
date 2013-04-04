@@ -29,11 +29,11 @@ public class UserManager extends Controller
 			User user = User.find.byId(userId);
 			if (user != null)
 			{
-				return ok(userSingle.render(user));
+				return ok(userSingle.render(user).body().trim()).as("text/xml");
 			}
 		}
 		
-		return ok(message.render("USER_GET_FAILED", ""));
+		return ok(message.render("USER_GET_FAILED", "").body().trim()).as("text/xml");
 	}
 	
 	//-----------------------------------------------------------------------//
@@ -50,7 +50,7 @@ public class UserManager extends Controller
 		
 		if (!isValidXml)
 		{
-			return badRequest(message.render("XML_INVALID", ""));
+			return badRequest(message.render("XML_INVALID", "").body().trim()).as("text/xml");
 		}
 		
 		// Gather required user information
@@ -72,7 +72,7 @@ public class UserManager extends Controller
 				
 		// Respond with xml message
 		String messageCode = (operationSucceeded ? "USER_CREATE_SUCCESS" : "USER_CREATE_FAILED");
-		return ok(message.render(messageCode, ""));
+		return ok(message.render(messageCode, "").body().trim()).as("text/xml");
 	}
 	
 	//-----------------------------------------------------------------------//
@@ -89,7 +89,7 @@ public class UserManager extends Controller
 		
 		if (!isValidXml)
 		{
-			return badRequest(message.render("XML_INVALID", ""));
+			return badRequest(message.render("XML_INVALID", "").body().trim()).as("text/xml");
 		}
 		
 		boolean operationSucceeded = false;
@@ -117,7 +117,7 @@ public class UserManager extends Controller
 		}
 		
 		String messageCode = (operationSucceeded ? "USER_UPDATE_SUCCESS" : "USER_UPDATE_FAILED");
-		return ok(message.render(messageCode, ""));
+		return ok(message.render(messageCode, "").body().trim()).as("text/xml");
 	}
 
 	//-----------------------------------------------------------------------//
@@ -143,6 +143,6 @@ public class UserManager extends Controller
 		}	
 		
 		String messageCode = (operationSucceeded ? "USER_DELETE_SUCCESS" : "USER_DELETE_FAILED");
-		return ok(message.render(messageCode, ""));
+		return ok(message.render(messageCode, "").body().trim()).as("text/xml");
 	}
 }

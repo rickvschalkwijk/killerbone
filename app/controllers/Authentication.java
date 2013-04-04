@@ -26,7 +26,7 @@ public class Authentication extends Controller
 		
 		if (!isValidXml)
 		{
-			return ok(message.render("XML_INVALID", ""));
+			return ok(message.render("XML_INVALID", "").body().trim()).as("text/xml");
 		}
 
 		// Gather required user information
@@ -39,11 +39,11 @@ public class Authentication extends Controller
 		if (user != null)
 		{
 			String authToken = authenticator.generateAuthToken(user.userId);
-			return ok(authtoken.render(authToken, user.userId));
+			return ok(authtoken.render(authToken, user.userId).body().trim()).as("text/xml");
 		}
 		else
 		{
-			return ok(message.render("AUTHTOKEN_CREATE_FAILED", ""));
+			return ok(message.render("AUTHTOKEN_CREATE_FAILED", "").body().trim()).as("text/xml");
 		}		
 	}
 }

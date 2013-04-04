@@ -51,11 +51,11 @@ public class FriendshipManager extends Controller
 				friendships.addAll(user.initiatedFriendships);
 				friendships.addAll(user.participatedFriendships);
 				
-				return ok(friendshipList.render(friendships));
+				return ok(friendshipList.render(friendships).body().trim()).as("text/xml");
 			}
 		}
 
-		return ok(message.render("FRIENDSHIPS_GET_FAILED", ""));
+		return ok(message.render("FRIENDSHIPS_GET_FAILED", "").body().trim()).as("text/xml");
 	}
 
 	// -----------------------------------------------------------------------//
@@ -72,7 +72,7 @@ public class FriendshipManager extends Controller
 
 		if (!isValidXml)
 		{
-			return ok(message.render("XML_INVALID", ""));
+			return ok(message.render("XML_INVALID", "").body().trim()).as("text/xml");
 		}
 
 		// Gather required friendship request information
@@ -82,7 +82,7 @@ public class FriendshipManager extends Controller
 		// Validate friendship request information
 		if (!validator.validateNumeric(initiatorId) || !validator.validateNumeric(participantId) || initiatorId.equals(participantId))
 		{
-			return badRequest(message.render("FRIENDSHIP_CREATE_FAILED", ""));
+			return badRequest(message.render("FRIENDSHIP_CREATE_FAILED", "").body().trim()).as("text/xml");
 		}
 
 		// Get involved users
@@ -100,7 +100,7 @@ public class FriendshipManager extends Controller
 		}
 
 		String messageCode = (operationSucceeded ? "FRIENDSHIP_CREATE_SUCCESS" : "FRIENDSHIP_CREATE_FAILED");
-		return ok(message.render(messageCode, ""));
+		return ok(message.render(messageCode, "").body().trim()).as("text/xml");
 	}
 
 	// -----------------------------------------------------------------------//
@@ -121,11 +121,11 @@ public class FriendshipManager extends Controller
 				friendship.approvalDate = DateTime.now();
 				friendship.save();
 				
-				return ok(message.render("FRIENDSHIP_ACCEPT_SUCCESS", ""));
+				return ok(message.render("FRIENDSHIP_ACCEPT_SUCCESS", "").body().trim()).as("text/xml");
 			}
 		}
 		
-		return ok(message.render("FRIENDSHIP_ACCEPT_FAILED", ""));
+		return ok(message.render("FRIENDSHIP_ACCEPT_FAILED", "").body().trim()).as("text/xml");
 	}
 
 	// -----------------------------------------------------------------------//
@@ -146,11 +146,11 @@ public class FriendshipManager extends Controller
 				friendship.endDate = DateTime.now();
 				friendship.save();
 				
-				return ok(message.render("FRIENDSHIP_DECLINE_SUCCESS", ""));
+				return ok(message.render("FRIENDSHIP_DECLINE_SUCCESS", "").body().trim()).as("text/xml");
 			}
 		}
 		
-		return ok(message.render("FRIENDSHIP_DECLINE_FAILED", ""));
+		return ok(message.render("FRIENDSHIP_DECLINE_FAILED", "").body().trim()).as("text/xml");
 	}
 
 	// -----------------------------------------------------------------------//
@@ -165,16 +165,16 @@ public class FriendshipManager extends Controller
 		{
 			Friendship friendship = Friendship.find.byId(friendshipId);
 			
-			if (friendship != null && (friendship.initiator.userId == userId ||friendship.participant.userId == userId) && friendship.status == FriendshipStatus.APPROVED)
+			if (friendship != null && (friendship.initiator.userId == userId ||friendship.participant.userId == userId))
 			{
 				friendship.status = FriendshipStatus.ENDED;
 				friendship.endDate = DateTime.now();
 				friendship.save();
 				
-				return ok(message.render("FRIENDSHIP_END_SUCCESS", ""));
+				return ok(message.render("FRIENDSHIP_END_SUCCESS", "").body().trim()).as("text/xml");
 			}	
 		}	
 		
-		return ok(message.render("FRIENDSHIP_END_FAILED", ""));
+		return ok(message.render("FRIENDSHIP_END_FAILED", "").body().trim()).as("text/xml");
 	}
 }
