@@ -12,7 +12,7 @@ import com.typesafe.config.ConfigFactory;
 import play.*;
 import play.mvc.Http.RequestHeader;
 import play.mvc.*;
-import views.xml.message;
+import views.xml.api.*;
 
 public class Global extends GlobalSettings
 {
@@ -40,7 +40,7 @@ public class Global extends GlobalSettings
 	{
 		
 	}
-
+	
 	@Override
 	public Result onBadRequest(RequestHeader request, String error)
 	{

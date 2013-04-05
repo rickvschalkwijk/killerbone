@@ -1,0 +1,54 @@
+@(title: String, page: String)(breadcrumb: Html)(content: Html)
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	    <meta charset="utf-8">
+	    <title>@Html(title + " &bull; " + page)</title>
+		<link rel='stylesheet' type='text/css' href='@routes.Assets.at("css/bootstrap.css")'>
+		<link rel='stylesheet' type='text/css' href='@routes.Assets.at("css/style.css")'>		
+  	</head>
+  	<body>
+		<div class="navbar navbar-inverse navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container-fluid">
+					<span class="brand">KillerBone CP</span>				
+					<p class="navbar-text pull-right">
+						Logged in as @session.get("Name"), <a href="@routes.Application.logout()" class="navbar-link">logout</a>.
+					</p>
+				</div>
+			</div>
+		</div>
+		<div class="container-fluid">
+			<div class="row-fluid">
+				<div class="span2">
+					<div class="well sidebar-nav">
+						<ul class="nav nav-list">
+							<li class="nav-header">Navigation</li>
+							<li @if(page == "Dashboard") { class="active" }>
+								<a href="@controllers.admin.routes.Dashboard.index()">Dashboard</a>
+							</li>
+							<li @if(page == "Users") { class="active" }>
+								<a href="@controllers.admin.routes.UserManagement.index()">Users</a>
+							</li>
+							<li @if(page == "Friendships") { class="active" }>
+								<a href="@controllers.admin.routes.FriendshipManagement.index()">Friendships</a>
+							</li>
+							<li @if(page == "Events") { class="active" }>
+								<a href="@controllers.admin.routes.EventManagement.index()">Events</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="span10">
+					<ul class="breadcrumb">
+						@breadcrumb			
+					</ul>	
+					@content
+				</div>
+			</div>
+		</div>
+		<!-- JavaScript includes -->
+		<script type='text/javascript' src='@routes.Assets.at("js/jquery.js")'></script>
+		<script type='text/javascript' src='@routes.Assets.at("js/bootstrap.js")'></script>
+	</body>
+</html>
