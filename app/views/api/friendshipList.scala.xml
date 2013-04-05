@@ -1,0 +1,31 @@
+@(friendships : List[Friendship])
+<?xml version="1.0" encoding="UTF-8" ?>
+<friendships>
+    @for(friendship <- friendships) {
+		<friendship id='@friendship.friendshipId'>
+			<initiator id='@friendship.initiator.userId'>
+				<name>@friendship.initiator.name</name>
+				@defining(friendship.getMemberLocation(friendship.initiator.userId)) { initiatorLocation =>
+					@if(friendship.status == Friendship.FriendshipStatus.APPROVED && initiatorLocation != null) {
+						<location refreshDate='@initiatorLocation.refreshDate.toString("dd-MM-yyyy HH:mm")'>
+						    <latitude>@initiatorLocation.latitude</latitude>
+						    <longitude>@initiatorLocation.longitude</longitude>
+						</location>	
+					}					
+				}
+			</initiator>
+			<participant id='@friendship.participant.userId'>
+				<name>@friendship.participant.name</name>
+				@defining(friendship.getMemberLocation(friendship.participant.userId)) { participantLocation =>
+					@if(friendship.status == Friendship.FriendshipStatus.APPROVED && participantLocation != null) {
+						<location refreshDate='@participantLocation.refreshDate.toString("dd-MM-yyyy HH:mm")'>
+						    <latitude>@participantLocation.latitude</latitude>
+						    <longitude>@participantLocation.longitude</longitude>
+						</location>	
+					}
+				}
+			</participant>
+			<status>@friendship.status</status>
+		</friendship>
+	} 
+</friendships>

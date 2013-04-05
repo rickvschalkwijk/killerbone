@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<friendshipRequest>
-	<fromId>
-		<!-- FROM ID -->	    
-	</fromId>
-	<toId>
-		<!-- TO ID -->
-	</toId>
-</friendshipRequest>

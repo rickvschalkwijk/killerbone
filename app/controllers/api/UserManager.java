@@ -1,19 +1,16 @@
-package controllers;
+package controllers.api;
 
-import java.io.File;
 import helpers.Common;
 import helpers.Server;
 import models.User;
 import org.joda.time.DateTime;
 import org.w3c.dom.Document;
 
-import play.api.Play;
 import play.libs.XPath;
 import play.mvc.*;
 import utils.Authenticator;
 import helpers.Validator;
-import utils.XmlProcessor;
-import views.xml.*;
+import views.xml.api.*;
 
 public class UserManager extends Controller
 {
@@ -23,7 +20,7 @@ public class UserManager extends Controller
 		
 		// Users may only get information about their own account
 		String authToken = Server.getHeaderValue("AuthToken");
-		if (authenticator.validateAuthToken(userId, authToken))
+		if (authenticator.validateAuthToken(userId, false, authToken))
 		{
 			// Find user by id
 			User user = User.find.byId(userId);
@@ -40,18 +37,7 @@ public class UserManager extends Controller
 	
 	public static Result createUser()
 	{
-		XmlProcessor xml = new XmlProcessor();
-		Validator validator = new Validator();
 		Document xmlDocument = request().body().asXml();
-		
-		// Validate xml document
-		File xsdFile = Play.current().getFile("/public/xsd/userCreate.xsd");
-		boolean isValidXml = xml.validateXmlAgainstXsd(xmlDocument, xsdFile.getAbsolutePath());	
-		
-		if (!isValidXml)
-		{
-			return badRequest(message.render("XML_INVALID", "").body().trim()).as("text/xml");
-		}
 		
 		// Gather required user information
 		String name = XPath.selectText("/user/name", xmlDocument).trim();
@@ -61,7 +47,7 @@ public class UserManager extends Controller
 		boolean operationSucceeded = false;
 		
 		// Validate user information
-		if (validator.validateName(name) || validator.validateEmail(email) || validator.validatePassword(password))
+		if (Validator.validateName(name) || Validator.validateEmail(email) || Validator.validatePassword(password))
 		{
 			// Create new user
 			User newUser = new User(name, email, password, DateTime.now());
@@ -79,24 +65,13 @@ public class UserManager extends Controller
 	
 	public static Result updateUser(long userId)
 	{
-		XmlProcessor xml = new XmlProcessor();
 		Authenticator authenticator = new Authenticator();
 		Document xmlDocument = request().body().asXml();
-		
-		// Validate xml document
-		File xsdFile = Play.current().getFile("/public/xsd/userUpdate.xsd");
-		boolean isValidXml = xml.validateXmlAgainstXsd(xmlDocument, xsdFile.getAbsolutePath());	
-		
-		if (!isValidXml)
-		{
-			return badRequest(message.render("XML_INVALID", "").body().trim()).as("text/xml");
-		}
-		
 		boolean operationSucceeded = false;
 
 		// Users may only update their own account, having a valid authtoken
 		String authToken = Server.getHeaderValue("AuthToken");
-		if (authenticator.validateAuthToken(userId, authToken))
+		if (authenticator.validateAuthToken(userId, false, authToken))
 		{
 			// Gather required user information
 			String name = XPath.selectText("/user/name", xmlDocument);
@@ -130,7 +105,7 @@ public class UserManager extends Controller
 		
 		// Users may only delete their own account, having a valid authtoken
 		String authToken = Server.getHeaderValue("AuthToken");
-		if (authenticator.validateAuthToken(userId, authToken))
+		if (authenticator.validateAuthToken(userId, false, authToken))
 		{
 			// Find and delete user by id
 			User user = User.find.byId(userId);

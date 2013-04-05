@@ -18,36 +18,40 @@ public class User extends Model
 	@Id
 	@GeneratedValue
 	public long userId;
-	
+
 	@Length(max = 50)
 	public String name;
-	
+
 	@Length(max = 50)
 	public String email;
-	
+
 	@Length(max = 255)
 	public String password;
-	
+
+	@Column(updatable = false)
+	public boolean isAdmin;
+
 	@Length(max = 255)
 	public String lastKnownLocation;
-	
+
 	@Formats.DateTime(pattern = "dd-MM-yyyy")
 	public DateTime creationDate;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "initiator")
 	public List<Friendship> initiatedFriendships;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "participant")
 	public List<Friendship> participatedFriendships;
-	
+
 	public User()
 	{
 		// Default values
 		initiatedFriendships = new ArrayList<Friendship>();
 		participatedFriendships = new ArrayList<Friendship>();
 	}
-	
-	public User(String name, String email, String password, DateTime creationDate)
+
+	public User(String name, String email, String password,
+			DateTime creationDate)
 	{
 		this();
 
@@ -56,10 +60,8 @@ public class User extends Model
 		this.password = password;
 		this.creationDate = creationDate;
 	}
-	
-	//-----------------------------------------------------------------------//
-	
-	public static Finder<Long, User> find = new Finder<Long, User>(
-			Long.class, User.class
-	);
+
+	// -----------------------------------------------------------------------//
+
+	public static Finder<Long, User> find = new Finder<Long, User>(Long.class, User.class);
 }

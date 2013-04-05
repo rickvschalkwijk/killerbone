@@ -3,9 +3,7 @@
 <categories>
     @for(category <- categories) {
 		<category id="@category.systemName">
-			<title>
-			    @category.title
-			</title>		
+			<title>@category.title</title>		
 		</category>
 	} 
 </categories>

@@ -1,5 +1,8 @@
 package models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.*;
 import org.joda.time.DateTime;
 import com.avaje.ebean.annotation.EnumMapping;
@@ -21,6 +24,9 @@ public class Friendship extends Model
 	@ManyToOne(fetch = FetchType.EAGER)
 	public User participant;
 	
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "friendship")
+	public List<FriendshipLocation> memberLocations;
+	
 	public FriendshipStatus status;
 	
 	@Formats.DateTime(pattern = "dd-MM-yyyy")
@@ -34,8 +40,9 @@ public class Friendship extends Model
 	
 	public Friendship()
 	{
-		// Default values
+		// Set default values
 		status = FriendshipStatus.PENDING;
+		memberLocations = new ArrayList<FriendshipLocation>();
 	}
 	
 	public Friendship(User initiator, User participant)
@@ -57,4 +64,39 @@ public class Friendship extends Model
 	public static Finder<Long, Friendship> find = new Finder<Long, Friendship>(
 			Long.class, Friendship.class
 	);	
+	
+	// -----------------------------------------------------------------------//
+	
+	public boolean isMember(long userId)
+	{
+		return (initiator.userId == userId || participant.userId == userId);
+	}
+	
+	public User getMember(long userId)
+	{
+		if (initiator.userId == userId)
+		{
+			return initiator;
+		}
+		if (participant.userId == userId)
+		{
+			return participant;
+		}
+		return null;
+	}
+	
+	public FriendshipLocation getMemberLocation(long userId)
+	{
+		if (memberLocations.size() > 0)
+		{
+			for(FriendshipLocation location : memberLocations)
+			{
+				if (location.user.userId == userId)
+				{
+					return location;
+				}
+			}
+		}
+		return null;
+	}
 }

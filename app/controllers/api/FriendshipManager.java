@@ -1,12 +1,12 @@
-package controllers;
+package controllers.api;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import helpers.Server;
 import helpers.Validator;
 import models.Friendship;
+import models.FriendshipLocation;
 import models.User;
 import models.Friendship.FriendshipStatus;
 
@@ -15,14 +15,15 @@ import org.w3c.dom.Document;
 
 import com.avaje.ebean.Ebean;
 
-import play.api.Play;
+import core.ApiController;
+
 import play.libs.XPath;
 import play.mvc.*;
 import utils.Authenticator;
-import utils.XmlProcessor;
-import views.xml.*;
+import views.xml.api.*;
+import views.xml.messages.*;
 
-public class FriendshipManager extends Controller
+public class FriendshipManager extends ApiController
 {
 	public static Result getUserFriendships(long userId)
 	{
@@ -30,7 +31,7 @@ public class FriendshipManager extends Controller
 
 		// Validate user access with authtoken
 		String authToken = Server.getHeaderValue("AuthToken");
-		if (authenticator.validateAuthToken(userId, authToken))
+		if (authenticator.validateAuthToken(userId, false, authToken))
 		{
 			User user = User.find.byId(userId);
 
@@ -58,39 +59,28 @@ public class FriendshipManager extends Controller
 		return ok(message.render("FRIENDSHIPS_GET_FAILED", "").body().trim()).as("text/xml");
 	}
 
-	// -----------------------------------------------------------------------//
+	//-----------------------------------------------------------------------//
 
 	public static Result createFriendship()
 	{
-		XmlProcessor xml = new XmlProcessor();
-		Validator validator = new Validator();
 		Document xmlDocument = request().body().asXml();
-
-		// Validate xml document
-		File xsdFile = Play.current().getFile("/public/xsd/friendshipRequest.xsd");
-		boolean isValidXml = xml.validateXmlAgainstXsd(xmlDocument, xsdFile.getAbsolutePath());
-
-		if (!isValidXml)
-		{
-			return ok(message.render("XML_INVALID", "").body().trim()).as("text/xml");
-		}
 
 		// Gather required friendship request information
 		String initiatorId = XPath.selectText("/friendshipRequest/initiatorId", xmlDocument).trim();
-		String participantId = XPath.selectText("/friendshipRequest/participantId", xmlDocument).trim();
+		String participantEmail = XPath.selectText("/friendshipRequest/participantEmail", xmlDocument).trim();
 
 		// Validate friendship request information
-		if (!validator.validateNumeric(initiatorId) || !validator.validateNumeric(participantId) || initiatorId.equals(participantId))
+		if (!Validator.validateNumeric(initiatorId) || !Validator.validateEmail(participantEmail))
 		{
 			return badRequest(message.render("FRIENDSHIP_CREATE_FAILED", "").body().trim()).as("text/xml");
 		}
 
 		// Get involved users
 		User initiator = User.find.byId(Long.valueOf(initiatorId));
-		User participant = User.find.byId(Long.valueOf(participantId));
+		User participant = User.find.where().eq("email", participantEmail).findUnique();
 
 		boolean operationSucceeded = false;
-		if (initiator != null && participant != null)
+		if (initiator != null && participant != null && initiator.userId != participant.userId)
 		{
 			Friendship newFriendship = new Friendship(initiator, participant);
 			newFriendship.requestDate = DateTime.now();
@@ -103,7 +93,7 @@ public class FriendshipManager extends Controller
 		return ok(message.render(messageCode, "").body().trim()).as("text/xml");
 	}
 
-	// -----------------------------------------------------------------------//
+	//-----------------------------------------------------------------------//
 
 	public static Result acceptFriendship(long friendshipId, long userId)
 	{
@@ -111,7 +101,7 @@ public class FriendshipManager extends Controller
 		
 		// Validate user access with authtoken
 		String authToken = Server.getHeaderValue("AuthToken");
-		if (authenticator.validateAuthToken(userId, authToken))
+		if (authenticator.validateAuthToken(userId, false, authToken))
 		{
 			Friendship friendship = Friendship.find.byId(friendshipId);
 			
@@ -128,7 +118,7 @@ public class FriendshipManager extends Controller
 		return ok(message.render("FRIENDSHIP_ACCEPT_FAILED", "").body().trim()).as("text/xml");
 	}
 
-	// -----------------------------------------------------------------------//
+	//-----------------------------------------------------------------------//
 
 	public static Result declineFriendship(long friendshipId, long userId)
 	{
@@ -136,7 +126,7 @@ public class FriendshipManager extends Controller
 		
 		// Validate user access with authtoken
 		String authToken = Server.getHeaderValue("AuthToken");
-		if (authenticator.validateAuthToken(userId, authToken))
+		if (authenticator.validateAuthToken(userId, false, authToken))
 		{
 			Friendship friendship = Friendship.find.byId(friendshipId);
 			
@@ -153,7 +143,7 @@ public class FriendshipManager extends Controller
 		return ok(message.render("FRIENDSHIP_DECLINE_FAILED", "").body().trim()).as("text/xml");
 	}
 
-	// -----------------------------------------------------------------------//
+	//-----------------------------------------------------------------------//
 	
 	public static Result endFriendship(long friendshipId, long userId)
 	{
@@ -161,7 +151,7 @@ public class FriendshipManager extends Controller
 		
 		// Validate user access with authtoken
 		String authToken = Server.getHeaderValue("AuthToken");
-		if (authenticator.validateAuthToken(userId, authToken))
+		if (authenticator.validateAuthToken(userId, false, authToken))
 		{
 			Friendship friendship = Friendship.find.byId(friendshipId);
 			
@@ -174,7 +164,38 @@ public class FriendshipManager extends Controller
 				return ok(message.render("FRIENDSHIP_END_SUCCESS", "").body().trim()).as("text/xml");
 			}	
 		}	
-		
 		return ok(message.render("FRIENDSHIP_END_FAILED", "").body().trim()).as("text/xml");
+	}
+	
+	//-----------------------------------------------------------------------//
+	
+	public static Result shareLocationWithFriendship(long friendshipId, long userId)
+	{
+		if (!isAuthorized(userId)) { return badRequest(unauthorized.render()); }
+		
+		Friendship friendship = Friendship.find.byId(friendshipId);
+		if (friendship != null && friendship.isMember(userId))
+		{
+			Document requestBodyXml = request().body().asXml();
+			
+			// Parse required information
+			String latitude = XPath.selectText("/location/latitude", requestBodyXml).trim();
+			String longitude = XPath.selectText("/location/longitude", requestBodyXml).trim();			
+			
+			// Get or create a friendship location
+			FriendshipLocation location = friendship.getMemberLocation(userId);
+			if (location == null)
+			{
+				location = new FriendshipLocation(friendship.getMember(userId), friendship, 0, 0);
+			}
+			
+			// Set location
+			location.latitude = Double.parseDouble(latitude);
+			location.longitude = Double.parseDouble(longitude);
+			
+			location.refreshDate = DateTime.now();
+			location.save();
+		}
+		return ok(message.render("FRIENDSHIP_LOCATION_UPDATED", "").body().trim()).as("text/xml");
 	}
 }

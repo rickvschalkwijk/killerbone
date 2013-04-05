@@ -1,10 +1,6 @@
 @(code : String, content : String)
 <?xml version="1.0" encoding="UTF-8" ?>
 <message>
-    <code>
-   		@code	     
-    </code>
-    <content>
-     	@content  
-    </content>
+    <code>@code</code>
+    <content>@content</content>
 </message>

@@ -40,6 +40,16 @@ create table friendship (
   constraint pk_friendship primary key (friendship_id))
 ;
 
+create table friendship_location (
+  friendship_location_id    bigint auto_increment not null,
+  latitude                  double not null,
+  longitude                 double not null,
+  user_user_id              bigint,
+  friendship_friendship_id  bigint,
+  refresh_date              datetime,
+  constraint pk_friendship_location primary key (friendship_location_id))
+;
+
 create table setting (
   setting_id                bigint auto_increment not null,
   setting_key               varchar(50),
@@ -53,6 +63,7 @@ create table user (
   name                      varchar(50),
   email                     varchar(50),
   password                  varchar(255),
+  is_admin                  tinyint(1) default 0,
   last_known_location       varchar(255),
   creation_date             datetime,
   constraint pk_user primary key (user_id))
@@ -64,6 +75,10 @@ alter table friendship add constraint fk_friendship_initiator_2 foreign key (ini
 create index ix_friendship_initiator_2 on friendship (initiator_user_id);
 alter table friendship add constraint fk_friendship_participant_3 foreign key (participant_user_id) references user (user_id) on delete restrict on update restrict;
 create index ix_friendship_participant_3 on friendship (participant_user_id);
+alter table friendship_location add constraint fk_friendship_location_user_4 foreign key (user_user_id) references user (user_id) on delete restrict on update restrict;
+create index ix_friendship_location_user_4 on friendship_location (user_user_id);
+alter table friendship_location add constraint fk_friendship_location_friendship_5 foreign key (friendship_friendship_id) references friendship (friendship_id) on delete restrict on update restrict;
+create index ix_friendship_location_friendship_5 on friendship_location (friendship_friendship_id);
 
 
 
@@ -76,6 +91,8 @@ drop table event;
 drop table event_category;
 
 drop table friendship;
+
+drop table friendship_location;
 
 drop table setting;
 

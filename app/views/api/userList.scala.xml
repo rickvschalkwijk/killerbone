@@ -3,15 +3,9 @@
 <users>
     @for(user <- users) {
 		<user id="@user.userId">
-			<name>
-			    @user.name
-			</name>
-			<email>
-			    @user.email
-			</email>
-			<password>
-			    @user.password
-			</password>			
+			<name>@user.name</name>
+			<email>@user.email</email>
+			<password>@user.password</password>			
 		</user>
 	} 
 </users>

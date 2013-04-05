@@ -1,4 +1,4 @@
-package controllers;
+package controllers.api;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,9 +7,7 @@ import models.Event;
 import models.EventCategory;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.xml.categoryList;
-import views.xml.eventList;
-import views.xml.message;
+import views.xml.api.*;
 
 public class EventManager extends Controller
 {

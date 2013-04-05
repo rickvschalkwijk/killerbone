@@ -15,12 +15,24 @@ import models.EventCategory;
 import play.Logger;
 import play.mvc.*;
 import utils.EventfulApi;
+import views.html.admin.login;
 
 public class Application extends Controller
 {
 	public static Result index()
 	{
 		return ok("Application is online!");
+	}
+	
+	public static Result login()
+	{
+		return ok(login.render());
+	}
+	
+	public static Result logout()
+	{
+		session().clear();
+		return redirect(routes.Application.login());
 	}
 	
 	//-----------------------------------------------------------------------//

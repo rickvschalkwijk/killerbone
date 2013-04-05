@@ -2,36 +2,59 @@
 
 # Application
 GET     /												controllers.Application.index()
+GET		/admin/login									controllers.Application.login()
+GET		/admin/logout									controllers.Application.logout()
 GET		/eventful/repopulate							controllers.Application.repopulateEventfulContent()
+GET     /assets/*file               					controllers.Assets.at(path="/public", file)
 
 # Authentication
-POST	/authtoken										controllers.Authentication.createAuthToken()
-
-# User Manager
-GET		/user/:userId									controllers.UserManager.getUser(userId : Long)
-POST	/user											controllers.UserManager.createUser()
-PUT		/user/:userId									controllers.UserManager.updateUser(userId : Long)
-DELETE	/user/:userId									controllers.UserManager.deleteUser(userId : Long)
-
-# Friendship Manager
-GET		/friendships/:userId							controllers.FriendshipManager.getUserFriendships(userId : Long)
-POST	/friendship										controllers.FriendshipManager.createFriendship()
-PUT		/friendship/:friendshipId/accept/:userId 		controllers.FriendshipManager.acceptFriendship(friendshipId : Long, userId : Long)
-PUT		/friendship/:friendshipId/decline/:userId 		controllers.FriendshipManager.declineFriendship(friendshipId : Long, userId : Long)
-PUT		/friendship/:friendshipId/end/:userId			controllers.FriendshipManager.endFriendship(friendshipId : Long, userId : Long)
-
-# Event Manager
-GET		/events											controllers.EventManager.getAllEvents()
-GET		/events/new/:timestamp							controllers.EventManager.getNewEvents(timestamp : Long)
-GET		/events/:category								controllers.EventManager.getAllEventsFromCategory(category : String)
-GET		/events/:category/new/:timestamp				controllers.EventManager.getNewEventsFromCategory(category : String, timestamp : Long)
-GET		/events/categories								controllers.EventManager.getAllCategories()
+POST	/authenticate/api								controllers.Authentication.performApiAuthentication()
+POST	/authenticate/admin								controllers.Authentication.performAdminAuthentication()
 
 # Development
 GET		/development/allusers							controllers.Development.getAllUsers()
 GET		/development/allfriendships						controllers.Development.getAllFriendships()
 GET		/development/allevents							controllers.Development.getAllEvents()
 GET		/development/allcategories						controllers.Development.getAllCategories()
-GET		/development/populatecategories					controllers.Development.populateCategoriesTable()
-GET		/development/populateevents						controllers.Development.populateEventsTable()
+GET		/development/generate/dummydata					controllers.Development.generateDummyData()
+
+#-----------------------------------------------------------------------------------------------------#
+
+# API Event Manager
+GET		/events											controllers.api.EventManager.getAllEvents()
+GET		/events/new/:timestamp							controllers.api.EventManager.getNewEvents(timestamp : Long)
+GET		/events/:category								controllers.api.EventManager.getAllEventsFromCategory(category : String)
+GET		/events/:category/new/:timestamp				controllers.api.EventManager.getNewEventsFromCategory(category : String, timestamp : Long)
+GET		/events/categories								controllers.api.EventManager.getAllCategories()
+
+# API Friendship Manager
+GET		/friendships/:userId							controllers.api.FriendshipManager.getUserFriendships(userId : Long)
+POST	/friendship										controllers.api.FriendshipManager.createFriendship()
+PUT		/friendship/:friendshipId/accept/:userId 		controllers.api.FriendshipManager.acceptFriendship(friendshipId : Long, userId : Long)
+PUT		/friendship/:friendshipId/decline/:userId 		controllers.api.FriendshipManager.declineFriendship(friendshipId : Long, userId : Long)
+PUT		/friendship/:friendshipId/end/:userId			controllers.api.FriendshipManager.endFriendship(friendshipId : Long, userId : Long)
+PUT		/friendship/:friendshipId/location/:userId		controllers.api.FriendshipManager.shareLocationWithFriendship(friendshipId : Long, userId : Long)
+
+# API User Manager
+GET		/user/:userId									controllers.api.UserManager.getUser(userId : Long)
+POST	/user											controllers.api.UserManager.createUser()
+PUT		/user/:userId									controllers.api.UserManager.updateUser(userId : Long)
+DELETE	/user/:userId									controllers.api.UserManager.deleteUser(userId : Long)
+
+#-----------------------------------------------------------------------------------------------------#
+
+# Admin Dashboard
+GET		/admin											controllers.admin.Dashboard.index()
+
+# Admin Event Management
+GET		/admin/events									controllers.admin.EventManagement.index()
+
+# Admin Friendship Management
+GET		/admin/friendships								controllers.admin.FriendshipManagement.index()
+
+# Admin User Management
+GET		/admin/users									controllers.admin.UserManagement.index(page: Integer ?= 1)
+GET		/admin/user/:userId								controllers.admin.UserManagement.displayUser(userId : Long)
+
+
 
