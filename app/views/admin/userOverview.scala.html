@@ -1,0 +1,173 @@
+@(user: models.User)
+
+@toUserLink(user: User) = {
+	<a href="@controllers.admin.routes.UserManagement.displayUserOverview(user.userId)">@user.name</a>
+}
+
+@layout.master(title = "KillerBone CP", page = "Users") {
+	<li>
+		<a href="@controllers.admin.routes.Dashboard.index()">Home</a>
+		<span class="divider">/</span>
+	</li>
+	<li>
+		<a href="@controllers.admin.routes.UserManagement.index()">Users</a>
+		<span class="divider">/</span>
+	</li>	
+	<li class="active">
+		@user.name
+	</li>
+} {
+	@if(flash.containsKey("user.updated")) {
+		<div class="alert alert-success">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<strong>@user.name</strong> has been successfully updated. 
+		</div> 
+	}
+	@if(flash.containsKey("user.password-reset")) {
+		<div class="alert alert-info">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<strong>Password</strong> has been reset, the user will recieve the new password by e-mail.  
+		</div> 
+	}	
+	<fieldset>
+		<legend>
+			@user.name
+		</legend>
+		@helper.form(action = controllers.admin.routes.UserManagement.resetPassword(user.userId), 'id -> "form-resetpassword") { }
+  		@helper.form(action = controllers.admin.routes.UserManagement.deleteUser(user.userId), 'id -> "form-deleteuser") { }
+		@helper.form(action = controllers.admin.routes.UserManagement.updateUser(user.userId), 'id -> "form-updateuser") {
+			<h4>General</h4>
+			<table class="table table-bordered">
+				<tbody>
+					<tr>
+						<td>Identifier</td>
+						<td>@user.userId</td>
+					</tr>
+					<tr>
+						<td>Name</td>
+						<td>@user.name</td>
+					</tr>		
+					<tr>
+						<td>E-mail</td>
+						<td>@user.email</td>
+					</tr>
+					<tr>
+						<td>Registration date</td>
+						<td>@user.creationDate.toString("hh:mm a, dd MMMM yyyy")</td>
+					</tr>
+					<tr>
+						<td>Last activity date</td>
+						<td>@user.lastActivityDate.toString("hh:mm a, dd MMMM yyyy")</td>
+					</tr>
+					<tr>
+						<td>Activated</td>
+						<td>
+							<input type="checkbox" id="isActivated" name="isActivated" @if(user.isActivated) { checked="checked" } style="margin: 0px">
+						</td>
+					</tr>							
+					<tr>
+						<td>Admin</td>
+						<td>
+							<input type="checkbox" id="isAdmin" name="isAdmin" @if(user.isAdmin) { checked="checked" } style="margin: 0px">
+						</td>
+					</tr>	
+				</tbody>
+			</table>			
+		}
+		<div class="pull-right">
+			<a id="update-user" class="btn btn-primary">
+				<i class="icon-white icon-ok"></i> Update
+			</a>
+			<a id="reset-password" class="btn">
+				<i class="icon-lock"></i> Reset password
+			</a>	
+			<a id="delete-user" class="btn btn-danger">
+				<i class="icon-white icon-trash"></i> Delete
+			</a>				
+		</div>
+		<span class="clearfix"></span>		
+		@if(user.initiatedFriendships.size() > 0 || user.participatedFriendships.size() > 0) {
+		  	<h4>Friendships</h4>
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th style="width: 5%;">Identifier</th>
+						<th style="width: 35%;">Friend</th>
+						<th style="width: 20%;">Status</th>
+						<th style="width: 20%;">Request date</th>
+						<th style="width: 20%;">Approvel date</th>
+					</tr>
+				</thead>
+				@for(friendship <- user.initiatedFriendships) {
+					<tr>
+						<td>
+							@friendship.friendshipId
+						</td>
+						<td>
+							@toUserLink(friendship.participant)
+						</td>
+						<td>
+							@friendship.status
+						</td>
+						<td>
+							@if(friendship.requestDate != null) {
+								@friendship.requestDate.toString("hh:mm a, dd MMMM yyyy")
+							} else {
+								-
+							}
+						</td>
+						<td>
+							@if(friendship.approvalDate != null) {
+								@friendship.approvalDate.toString("hh:mm a, dd MMMM yyyy")
+							} else {
+								-
+							}
+						</td>
+					</tr>
+				}
+				@for(friendship <- user.participatedFriendships) {
+					<tr>
+						<td>
+							@toUserLink(friendship.initiator)
+						</td>
+						<td>
+							@friendship.status
+						</td>
+						<td>
+							@if(friendship.requestDate != null) {
+								@friendship.requestDate.toString("hh:mm a, dd MMMM yyyy")
+							} else {
+								-
+							}
+						</td>
+						<td>
+							@if(friendship.approvalDate != null) {
+								@friendship.approvalDate.toString("hh:mm a, dd MMMM yyyy")
+							} else {
+								-
+							}
+						</td>
+					</tr>
+				}		
+			</table>
+		}
+	</fieldset>
+} {
+	jQuery('#update-user').click(function() {
+		jQuery('#form-updateuser').submit();
+	});
+	jQuery('#delete-user').click(function() {
+		bootbox.confirm("Are you sure you want to delete this user?", "No", "Yes, I'm sure", function(result) {
+		  if (result == true) {
+		  	jQuery('#form-deleteuser').submit();
+		  }
+		}); 
+	});		
+	jQuery('#reset-password').click(function() {
+		bootbox.confirm("Are you sure you want to reset the password of this user?", "No", "Yes, I'm sure", function(result) {
+		  if (result == true) {
+		  	jQuery('#form-resetpassword').submit();
+		  }
+		});
+	});
+}

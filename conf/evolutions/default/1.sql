@@ -64,7 +64,9 @@ create table user (
   email                     varchar(50),
   password                  varchar(255),
   is_admin                  tinyint(1) default 0,
+  is_activated              tinyint(1) default 0,
   last_known_location       varchar(255),
+  last_activity_date        datetime,
   creation_date             datetime,
   constraint pk_user primary key (user_id))
 ;

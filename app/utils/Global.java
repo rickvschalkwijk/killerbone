@@ -12,7 +12,6 @@ import com.typesafe.config.ConfigFactory;
 import play.*;
 import play.mvc.Http.RequestHeader;
 import play.mvc.*;
-import views.xml.api.*;
 
 public class Global extends GlobalSettings
 {
@@ -44,6 +43,6 @@ public class Global extends GlobalSettings
 	@Override
 	public Result onBadRequest(RequestHeader request, String error)
 	{
-		return Results.badRequest(message.render("INVALID_REQUEST", ""));
+		return Results.badRequest();
 	}
 }

@@ -28,13 +28,16 @@ public class User extends Model
 	@Length(max = 255)
 	public String password;
 
-	@Column(updatable = false)
 	public boolean isAdmin;
+	public boolean isActivated;
 
 	@Length(max = 255)
 	public String lastKnownLocation;
 
-	@Formats.DateTime(pattern = "dd-MM-yyyy")
+	@Formats.DateTime(pattern = "dd-MM-yyyy HH:mm")
+	public DateTime lastActivityDate;	
+	
+	@Formats.DateTime(pattern = "dd-MM-yyyy HH:mm")
 	public DateTime creationDate;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "initiator")
@@ -48,10 +51,10 @@ public class User extends Model
 		// Default values
 		initiatedFriendships = new ArrayList<Friendship>();
 		participatedFriendships = new ArrayList<Friendship>();
+		lastActivityDate = DateTime.now();
 	}
 
-	public User(String name, String email, String password,
-			DateTime creationDate)
+	public User(String name, String email, String password, DateTime creationDate)
 	{
 		this();
 

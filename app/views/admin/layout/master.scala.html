@@ -1,4 +1,4 @@
-@(title: String, page: String)(breadcrumb: Html)(content: Html)
+@(title: String, page: String)(breadcrumb: Html)(content: Html)(onDocumentReadyJs: Html)
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -30,9 +30,6 @@
 							<li @if(page == "Users") { class="active" }>
 								<a href="@controllers.admin.routes.UserManagement.index()">Users</a>
 							</li>
-							<li @if(page == "Friendships") { class="active" }>
-								<a href="@controllers.admin.routes.FriendshipManagement.index()">Friendships</a>
-							</li>
 							<li @if(page == "Events") { class="active" }>
 								<a href="@controllers.admin.routes.EventManagement.index()">Events</a>
 							</li>
@@ -49,6 +46,13 @@
 		</div>
 		<!-- JavaScript includes -->
 		<script type='text/javascript' src='@routes.Assets.at("js/jquery.js")'></script>
+		<script type='text/javascript' src='@routes.Assets.at("js/jquery.timeago.js")'></script>
 		<script type='text/javascript' src='@routes.Assets.at("js/bootstrap.js")'></script>
+		<script type='text/javascript' src='@routes.Assets.at("js/bootbox.js")'></script>
+		<script type='text/javascript'>
+			jQuery(document).ready(function() {
+				@onDocumentReadyJs				
+			});
+		</script>
 	</body>
 </html>

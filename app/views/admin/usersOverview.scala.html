@@ -4,8 +4,8 @@
     controllers.admin.routes.UserManagement.index(newPage) 
 }
 
-@displayUser(userId: Long) = @{
-	controllers.admin.routes.UserManagement.displayUser(userId)
+@toUserLink(user: User) = {
+	<a href="@controllers.admin.routes.UserManagement.displayUserOverview(user.userId)">@user.name</a>
 }
 
 @layout.master(title = "KillerBone CP", page = "Users") {
@@ -17,37 +17,133 @@
 		Users
 	</li>
 } {
-  	<h3>Users</h3>
-  	<p>All users that are using the KillerApp.</p>  
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th>Name</th>
-				<th>E-mail</th>
-			</tr>
-		</thead>
-		<tbody>
-			@for(user <- userPage.getList) {
+	@if(flash.containsKey("user.create.success")) {
+		<div class="alert alert-success">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<strong>@flash.get("user.create.name")</strong> has been successfully created. 
+		</div> 
+	}	
+	@if(flash.containsKey("user.deleted")) {
+		<div class="alert alert-success">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<strong>@flash.get("user.deleted")</strong> has been successfully deleted. 
+		</div> 
+	}
+	<fieldset>
+		<legend>Users</legend>
+		<table class="table table-bordered">
+			<thead>
 				<tr>
-					<td><a href="@displayUser(user.userId)">@user.name</a> @if(user.isAdmin) { <span class="label">Admin</span> }</td>
-					<td>@user.email</td>
+					<th>Name</th>
+					<th>E-mail</th>
+					<th>Last activity</th>
 				</tr>
-			}
-		</tbody>
-	</table>
-	<div id="pagination" class="pagination">
-		<ul>
-			@if(userPage.hasPrev) {
-				<li class="prev"><a href="@setPage(userPage.getPageIndex - 1)">&larr; Previous</a></li> 
-			} else {
-				<li class="prev disabled"><a>&larr; Previous</a></li> 
-			}
-				<li class="current"><a>Displaying @userPage.getDisplayXtoYofZ</a></li> 
-			@if(userPage.hasNext) {
-				<li class="next"><a href="@setPage(userPage.getPageIndex + 1)">Next &rarr;</a></li> 
-			} else {
-				<li class="next disabled"><a>Next &rarr;</a></li> 
-			}
-		</ul>
-	</div>
+			</thead>
+			<tbody>
+				@for(user <- userPage.getList) {
+					<tr>
+						<td>
+							@toUserLink(user)
+							@if(user.isAdmin) { <span class="label">Admin</span> }
+							@if(!user.isActivated) { <span class="label label-warning">Unactivated</span> }
+						</td>
+						<td>@user.email</td>
+						<td>
+							<span class="timeago" title="@user.lastActivityDate">
+								@user.lastActivityDate.toString("hh:mm a, dd MMMM yyy")
+							</span>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+		<table style="width: 100%;">
+			<tr style="vertical-align: top;">
+				<td>
+					<div id="pagination" style="margin: 0px;" class="pagination pull-left">
+						<ul>
+							@if(userPage.hasPrev) {
+								<li class="prev"><a href="@setPage(userPage.getPageIndex - 1)">&larr; Previous</a></li> 
+							} else {
+								<li class="prev disabled"><a>&larr; Previous</a></li> 
+							}
+								<li class="current"><a>Displaying @userPage.getDisplayXtoYofZ</a></li> 
+							@if(userPage.hasNext) {
+								<li class="next"><a href="@setPage(userPage.getPageIndex + 1)">Next &rarr;</a></li> 
+							} else {
+								<li class="next disabled"><a>Next &rarr;</a></li> 
+							}
+						</ul>
+					</div>
+				</td>
+				<td>
+					<div class="pull-right">
+						<a id="search-user" class="btn">
+							<i class="icon-search"></i> Search
+						</a>
+				 		<a href="#createUserModal" role="button" class="btn" data-toggle="modal">
+				  			<i class="icon-plus"></i> Create user
+				  		</a>
+					</div>	
+				</td>
+			</tr>
+		</table>
+	</fieldset>
+	<!-- Create User Modal -->
+	<div id="createUserModal" class="modal hide fade" role="dialog" aria-labelledby="createUserModal" aria-hidden="true">
+		<div class="modal-header">
+	    	<h3 id="myModalLabel">Create user</h3>
+	  	</div>
+	  	<div class="modal-body">
+	  	<p>Fill in the form and click on send to create a new user.</p>
+	  	<br />
+		@helper.form(action = controllers.admin.routes.UserManagement.createUser(), 'id -> "form-createuser", 'class -> "form-horizontal") {
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">Name</label>
+					<div class="controls">
+						<input id="name" name="name" type="text" placeholder="" class="input-large" required="">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">E-mail</label>
+					<div class="controls">
+						<input id="email" name="email" type="text" placeholder="" class="input-large" required="">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">Password</label>
+					<div class="controls">
+						<input id="password" name="password" type="password" placeholder="" class="input-large" required="">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">Options</label>
+					<div class="controls">
+						<label class="checkbox">
+							<input type="checkbox" name="isAdmin"> Admin
+						</label> 
+						<label class="checkbox">
+							<input type="checkbox" name="isActivated" checked="checked"> Activated
+						</label>
+					</div>
+				</div>
+			</fieldset>
+		}
+	  	</div>
+	  	<div class="modal-footer">
+			<a id="close-modal" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+	    	<a id="create-user" class="btn btn-primary">Send</a>
+	  	</div>
+	</div>	
+} {
+	jQuery('.timeago').timeago();
+	
+	jQuery('#search-user').click(function() {
+		alert('not yet implemented');
+	});
+	
+	jQuery('#create-user').click(function() {
+		jQuery('#form-createuser').submit()
+	});
 }
