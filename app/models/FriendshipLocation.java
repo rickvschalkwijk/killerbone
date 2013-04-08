@@ -36,7 +36,7 @@ public class FriendshipLocation extends Model
 		// Default values
 	}
 	
-	public FriendshipLocation(User user, Friendship friendship, double latitude, double longitude)
+	public FriendshipLocation(User user, Friendship friendship, double latitude, double longitude, DateTime refreshDate)
 	{
 		this();
 		
@@ -44,6 +44,7 @@ public class FriendshipLocation extends Model
 		this.friendship = friendship;
 		this.latitude = latitude;
 		this.longitude = longitude;
+		this.refreshDate = refreshDate;
 	}
 	
 	//-----------------------------------------------------------------------//

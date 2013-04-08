@@ -35,8 +35,8 @@ create table friendship (
   status                    varchar(1),
   request_date              datetime,
   approval_date             datetime,
-  end_date                  datetime,
   constraint ck_friendship_status check (status in ('S','P','E','A','D')),
+  constraint uq_friendship_1 unique (initiator_user_id ,participant_user_id),
   constraint pk_friendship primary key (friendship_id))
 ;
 

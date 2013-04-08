@@ -2,23 +2,46 @@ package helpers;
 
 import java.util.List;
 
+import models.User;
+
 import com.avaje.ebean.Ebean;
+import com.avaje.ebean.Expr;
+import com.avaje.ebean.Query;
 
 public class Pagination
 {
-	public static <T> Page<T> page(Class<T> entityClass, int page, int pageSize, String sortBy, String order, String filter)
+	public static Page<User> getUserPage(int page, int pageSize, String orderBy, String filter)
 	{
 		if (page < 1)
 		{
 			page = 1;
 		}
-		
-		int totalRowCount = Ebean.find(entityClass).findRowCount();
-		List<T> entities = Ebean.find(entityClass).setFirstRow((page - 1) * pageSize).setMaxRows(pageSize).findList();
-		
-		return new Page<T>(entities, totalRowCount, page, pageSize);
-	}
+		if (orderBy == null)
+		{
+			orderBy = "";
+		}
+		if (filter == null)
+		{
+			filter = "";
+		}
 
+		// Compose query
+		Query<User> query = Ebean.find(User.class)
+								 .setFirstRow((page - 1) * pageSize)
+								 .setMaxRows(pageSize)
+								 .where()
+								 .or(Expr.like("email", "%" + filter + "%"), Expr.like("name", "%" + filter + "%"))
+								 .orderBy(orderBy);
+		
+		// Execute query
+		List<User> users = query.findList();
+		int totalRowCount = query.findRowCount();
+		
+		return new Page<User>(users, totalRowCount, page, pageSize);		
+	}
+	
+	//-----------------------------------------------------------------------//
+	
 	public static class Page<T>
 	{
 		private final int pageSize;
@@ -56,13 +79,14 @@ public class Pagination
 
 		public boolean hasNext()
 		{
-			return (totalRowCount / pageSize) >= pageIndex;
+			return (totalRowCount / pageSize) > pageIndex;
 		}
 
 		public String getDisplayXtoYofZ()
 		{
 			int start = ((pageIndex - 1) * pageSize + 1);
 			int end = start + Math.min(pageSize, list.size()) - 1;
+			start = Math.min(start, end);
 			return start + " to " + end + " of " + totalRowCount;
 		}
 	}

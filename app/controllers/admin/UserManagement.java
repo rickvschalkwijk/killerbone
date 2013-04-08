@@ -19,22 +19,24 @@ import core.AdminController;
 public class UserManagement extends AdminController
 {
 	@Authorized
-	public static Result index(int page)
+	public static Result index(int page, String orderBy, String filter)
 	{
 		// Display all users
-		Page<User> users = Pagination.page(User.class, page, 25, "", "", "");
-		return ok(usersOverview.render(users));
+		Page<User> users = Pagination.getUserPage(page, 25, orderBy, filter);
+		
+		
+		return ok(usersOverview.render(users, orderBy, filter));
 	}
 	
 	@Authorized
-	public static Result displayUserOverview(long userId)
+	public static Result displayUser(long userId)
 	{
 		User user = User.find.byId(userId);
 		if (user != null)
 		{
 			return ok(userOverview.render(user));
 		}
-		return redirect(controllers.admin.routes.UserManagement.index(1));
+		return redirect(controllers.admin.routes.UserManagement.index(1, "", ""));
 	}
 	
 	//-----------------------------------------------------------------------//
@@ -75,7 +77,7 @@ public class UserManagement extends AdminController
 		{
 			flash("user.create.failed", "");
 		}
-		return redirect(controllers.admin.routes.UserManagement.index(1));
+		return redirect(controllers.admin.routes.UserManagement.index(1, "", ""));
 	}
 	
 	@Authorized(redirectToLogin = false)
@@ -96,7 +98,7 @@ public class UserManagement extends AdminController
 			
 			flash("user.updated", "");
 		}
-		return redirect(controllers.admin.routes.UserManagement.displayUserOverview(userId));
+		return redirect(controllers.admin.routes.UserManagement.displayUser(userId));
 	}
 	
 	
@@ -109,7 +111,7 @@ public class UserManagement extends AdminController
 			Ebean.delete(user);
 			flash("user.deleted", user.name);
 		}
-		return redirect(controllers.admin.routes.UserManagement.index(1));	
+		return redirect(controllers.admin.routes.UserManagement.index(1, "", ""));	
 	}
 	
 	@Authorized(redirectToLogin = false)
@@ -122,6 +124,6 @@ public class UserManagement extends AdminController
 			
 			flash("user.password-reset", "");
 		}
-		return redirect(controllers.admin.routes.UserManagement.displayUserOverview(userId));
+		return redirect(controllers.admin.routes.UserManagement.displayUser(userId));
 	}
 }

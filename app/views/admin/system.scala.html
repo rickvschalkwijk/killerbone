@@ -1,0 +1,74 @@
+@layout.master(title = "KillerBone CP", page = "System") {
+	<li>
+		<a href="@controllers.admin.routes.Dashboard.index()">Home</a>
+		<span class="divider">/</span>
+	</li>
+	<li class="active">System</li>
+} {
+	<fieldset>
+		<legend>System</legend>
+		<h5>Application information</h5>
+		<table class="table table-bordered">
+			<tr>
+				<td style="width: 45%;">Startup time:</td>
+				<td>
+					<span class="timeago" title='@helpers.Settings.get("application.startupdate")'>
+						@helpers.Settings.get("application.startupdate")
+					</span>
+				</td>
+			</tr>
+		</table>		
+		<h5>Server information</h5>
+		<table class="table table-bordered">
+			<tr>
+				<td style="width: 45%;">Operating System</td>
+				<td>@System.getProperty("os.name")</td>
+			</tr>
+			<tr>
+				<td>System Architecture</td>
+				<td>@System.getProperty("os.arch")</td>
+			</tr>
+			<tr>
+				<td>System Memory</td>
+				<td>
+					<table class="table-condensed">
+						<tr>
+							<td style="border-left: none;">
+								Used Memory
+							</td>
+							<td>
+								@((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024*1024)) mb
+							</td>
+						</tr>
+						<tr>
+							<td style="border-left: none;">
+								Free Memory
+							</td>
+							<td>
+								@(Runtime.getRuntime().freeMemory() / (1024*1024)) mb
+							</td>
+						</tr>
+						<tr>
+							<td style="border-left: none;">
+								Max Memory
+							</td>
+							<td>
+								@(Runtime.getRuntime().maxMemory() / (1024*1024)) mb
+							</td>
+						</tr>												
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td>Java Vendor</td>
+				<td>@System.getProperty("java.vendor")</td>
+			</tr>		
+			<tr>
+				<td>Java Version</td>
+				<td>@System.getProperty("java.version")</td>
+			</tr>			
+		</table>
+	</fieldset>
+} {
+	jQuery('.timeago').timeago();
+}

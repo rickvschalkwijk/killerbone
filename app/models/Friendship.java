@@ -10,6 +10,7 @@ import play.data.format.Formats;
 import play.db.ebean.*;
 
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"initiator_user_id ", "participant_user_id"}))
 public class Friendship extends Model
 {
 	private static final long serialVersionUID = -2596701516702084821L;
@@ -34,9 +35,6 @@ public class Friendship extends Model
 	
 	@Formats.DateTime(pattern = "dd-MM-yyyy")
 	public DateTime approvalDate;
-	
-	@Formats.DateTime(pattern = "dd-MM-yyyy")
-	public DateTime endDate;
 	
 	public Friendship()
 	{

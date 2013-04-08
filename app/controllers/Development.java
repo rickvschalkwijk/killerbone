@@ -66,7 +66,7 @@ public class Development extends Controller
 		friendships.add(rickAndvincent);
 		
 		List<FriendshipLocation> locations = new ArrayList<FriendshipLocation>();
-		FriendshipLocation onnoLocation = new FriendshipLocation(onno, onnoAndfons, 53.6875, 4);
+		FriendshipLocation onnoLocation = new FriendshipLocation(onno, onnoAndfons, 53.6875, 4, DateTime.now());
 		locations.add(onnoLocation);
 		
 		// Save 

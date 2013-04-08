@@ -50,12 +50,13 @@ GET		/admin											controllers.admin.Dashboard.index()
 GET		/admin/events									controllers.admin.EventManagement.index()
 
 # Admin User Management
-GET		/admin/users									controllers.admin.UserManagement.index(page: Integer ?= 1)
-GET		/admin/user/:userId								controllers.admin.UserManagement.displayUserOverview(userId : Long)
+GET		/admin/users									controllers.admin.UserManagement.index(page: Integer ?= 1, orderBy: String ?= "", filter: String ?="")
+GET		/admin/user/:userId								controllers.admin.UserManagement.displayUser(userId : Long)
 POST	/admin/user/create								controllers.admin.UserManagement.createUser()
 POST	/admin/user/:userId/update						controllers.admin.UserManagement.updateUser(userId : Long)
 POST	/admin/user/:userId/delete						controllers.admin.UserManagement.deleteUser(userId : Long)
 POST	/admin/user/:userId/resetPassword				controllers.admin.UserManagement.resetPassword(userId : Long)
 
-
+# Admin System
+GET		/admin/system									controllers.admin.System.index()
 

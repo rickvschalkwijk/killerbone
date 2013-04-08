@@ -3,7 +3,6 @@ package controllers.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import helpers.Server;
 import helpers.Validator;
 import models.Friendship;
 import models.FriendshipLocation;
@@ -14,49 +13,42 @@ import org.joda.time.DateTime;
 import org.w3c.dom.Document;
 
 import com.avaje.ebean.Ebean;
+import com.avaje.ebean.Expr;
 
 import core.ApiController;
 
 import play.libs.XPath;
 import play.mvc.*;
-import utils.Authenticator;
 import views.xml.api.*;
-import views.xml.messages.*;
+import views.xml.api.messages.*;
 
 public class FriendshipManager extends ApiController
 {
 	public static Result getUserFriendships(long userId)
 	{
-		Authenticator authenticator = new Authenticator();
-
-		// Validate user access with authtoken
-		String authToken = Server.getHeaderValue("AuthToken");
-		if (authenticator.validateAuthToken(userId, false, authToken))
+		if (!isAuthorized(userId)) { return badRequest(unauthorized.render()); }
+		
+		User user = User.find.byId(userId);
+		if (user != null)
 		{
-			User user = User.find.byId(userId);
+			List<Friendship> friendships = new ArrayList<Friendship>();
 
-			if (user != null)
+			// Change pending friendships to sent
+			for (Friendship friendship : user.participatedFriendships) 
 			{
-				List<Friendship> friendships = new ArrayList<Friendship>();
-
-				// Change pending friendships to sent
-				for (Friendship friendship : user.participatedFriendships) 
+				if (friendship.status == FriendshipStatus.PENDING)
 				{
-					if (friendship.status == FriendshipStatus.PENDING)
-					{
-						friendship.status = FriendshipStatus.SENT;						
-					}
+					friendship.status = FriendshipStatus.SENT;						
 				}
-				Ebean.save(user.participatedFriendships);
-				
-				friendships.addAll(user.initiatedFriendships);
-				friendships.addAll(user.participatedFriendships);
-				
-				return ok(friendshipList.render(friendships).body().trim()).as("text/xml");
 			}
-		}
+			Ebean.save(user.participatedFriendships);
 
-		return ok(message.render("FRIENDSHIPS_GET_FAILED", "").body().trim()).as("text/xml");
+			friendships.addAll(user.initiatedFriendships);
+			friendships.addAll(user.participatedFriendships);
+			
+			return ok(friendshipList.render(friendships).body().trim()).as("text/xml");
+		}
+		return ok(operationFailed.render());
 	}
 
 	//-----------------------------------------------------------------------//
@@ -72,99 +64,88 @@ public class FriendshipManager extends ApiController
 		// Validate friendship request information
 		if (!Validator.validateNumeric(initiatorId) || !Validator.validateEmail(participantEmail))
 		{
-			return badRequest(message.render("FRIENDSHIP_CREATE_FAILED", "").body().trim()).as("text/xml");
+			return badRequest(operationFailed.render());
 		}
 
+		// Validate initiator
+		if (!isAuthorized(Long.valueOf(initiatorId))) { return badRequest(unauthorized.render()); }
+		
 		// Get involved users
 		User initiator = User.find.byId(Long.valueOf(initiatorId));
 		User participant = User.find.where().eq("email", participantEmail).findUnique();
 
+		// Create friendship
 		boolean operationSucceeded = false;
 		if (initiator != null && participant != null && initiator.userId != participant.userId)
 		{
+			// Delete any ended friendships
+			Friendship endedFriendship = Friendship.find.where(
+					Expr.and(Expr.eq("status", "E"),
+					Expr.or(
+					    Expr.and(Expr.eq("initiatorId", initiator.userId), Expr.eq("participantId", participant.userId)),
+						Expr.and(Expr.eq("initiatorId", participant.userId), Expr.eq("participantId", initiator.userId)))
+					)).findUnique();
+			if (endedFriendship != null)
+			{
+				endedFriendship.delete();
+			}
+			
+			// Create new friendship
 			Friendship newFriendship = new Friendship(initiator, participant);
 			newFriendship.requestDate = DateTime.now();
 			newFriendship.save();
 
 			operationSucceeded = (newFriendship.friendshipId != 0);
 		}
-
-		String messageCode = (operationSucceeded ? "FRIENDSHIP_CREATE_SUCCESS" : "FRIENDSHIP_CREATE_FAILED");
-		return ok(message.render(messageCode, "").body().trim()).as("text/xml");
+		return ok(operationSucceeded ? operationSuccess.render() : operationFailed.render());
 	}
 
 	//-----------------------------------------------------------------------//
 
 	public static Result acceptFriendship(long friendshipId, long userId)
 	{
-		Authenticator authenticator = new Authenticator();
+		if (!isAuthorized(userId)) { return badRequest(unauthorized.render()); }
 		
-		// Validate user access with authtoken
-		String authToken = Server.getHeaderValue("AuthToken");
-		if (authenticator.validateAuthToken(userId, false, authToken))
+		Friendship friendship = Friendship.find.byId(friendshipId);
+		if (friendship != null && friendship.participant.userId == userId && friendship.status == FriendshipStatus.SENT)
 		{
-			Friendship friendship = Friendship.find.byId(friendshipId);
+			friendship.status = FriendshipStatus.APPROVED;
+			friendship.approvalDate = DateTime.now();
+			friendship.save();
 			
-			if (friendship != null && friendship.participant.userId == userId && friendship.status == FriendshipStatus.SENT)
-			{
-				friendship.status = FriendshipStatus.APPROVED;
-				friendship.approvalDate = DateTime.now();
-				friendship.save();
-				
-				return ok(message.render("FRIENDSHIP_ACCEPT_SUCCESS", "").body().trim()).as("text/xml");
-			}
+			return ok(operationSuccess.render());
 		}
-		
-		return ok(message.render("FRIENDSHIP_ACCEPT_FAILED", "").body().trim()).as("text/xml");
+		return ok(operationFailed.render());
 	}
 
 	//-----------------------------------------------------------------------//
 
 	public static Result declineFriendship(long friendshipId, long userId)
 	{
-		Authenticator authenticator = new Authenticator();
+		if (!isAuthorized(userId)) { return badRequest(unauthorized.render()); }
 		
-		// Validate user access with authtoken
-		String authToken = Server.getHeaderValue("AuthToken");
-		if (authenticator.validateAuthToken(userId, false, authToken))
+		Friendship friendship = Friendship.find.byId(friendshipId);
+		if (friendship != null && friendship.participant.userId == userId && friendship.status == FriendshipStatus.SENT)
 		{
-			Friendship friendship = Friendship.find.byId(friendshipId);
-			
-			if (friendship != null && friendship.participant.userId == userId && friendship.status == FriendshipStatus.SENT)
-			{
-				friendship.status = FriendshipStatus.DECLINED;
-				friendship.endDate = DateTime.now();
-				friendship.save();
-				
-				return ok(message.render("FRIENDSHIP_DECLINE_SUCCESS", "").body().trim()).as("text/xml");
-			}
+			friendship.delete();
+			return ok(operationSuccess.render());
 		}
-		
-		return ok(message.render("FRIENDSHIP_DECLINE_FAILED", "").body().trim()).as("text/xml");
+		return ok(operationFailed.render());
 	}
 
 	//-----------------------------------------------------------------------//
 	
 	public static Result endFriendship(long friendshipId, long userId)
 	{
-		Authenticator authenticator = new Authenticator();
+		if (!isAuthorized(userId)) { return badRequest(unauthorized.render()); }
 		
-		// Validate user access with authtoken
-		String authToken = Server.getHeaderValue("AuthToken");
-		if (authenticator.validateAuthToken(userId, false, authToken))
+		Friendship friendship = Friendship.find.byId(friendshipId);
+		if (friendship != null && (friendship.initiator.userId == userId ||friendship.participant.userId == userId))
 		{
-			Friendship friendship = Friendship.find.byId(friendshipId);
-			
-			if (friendship != null && (friendship.initiator.userId == userId ||friendship.participant.userId == userId))
-			{
-				friendship.status = FriendshipStatus.ENDED;
-				friendship.endDate = DateTime.now();
-				friendship.save();
-				
-				return ok(message.render("FRIENDSHIP_END_SUCCESS", "").body().trim()).as("text/xml");
-			}	
+			friendship.delete();
+			return ok(operationSuccess.render());
 		}	
-		return ok(message.render("FRIENDSHIP_END_FAILED", "").body().trim()).as("text/xml");
+		return ok(operationFailed.render());
 	}
 	
 	//-----------------------------------------------------------------------//
@@ -186,14 +167,13 @@ public class FriendshipManager extends ApiController
 			FriendshipLocation location = friendship.getMemberLocation(userId);
 			if (location == null)
 			{
-				location = new FriendshipLocation(friendship.getMember(userId), friendship, 0, 0);
+				location = new FriendshipLocation(friendship.getMember(userId), friendship, 0, 0, DateTime.now());
 			}
 			
 			// Set location
 			location.latitude = Double.parseDouble(latitude);
 			location.longitude = Double.parseDouble(longitude);
 			
-			location.refreshDate = DateTime.now();
 			location.save();
 		}
 		return ok(message.render("FRIENDSHIP_LOCATION_UPDATED", "").body().trim()).as("text/xml");

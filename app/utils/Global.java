@@ -1,7 +1,11 @@
 package utils;
 
+import helpers.Settings;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import org.joda.time.DateTime;
 
 import models.EventCategory;
 
@@ -18,6 +22,9 @@ public class Global extends GlobalSettings
 	@Override
 	public void onStart(Application app)
 	{
+		// General settings
+		Settings.set("application.startupdate", DateTime.now().toString("hh:mm a, dd MMMM yyy"));
+		
 		// Setup Eventful API
 		APIConfiguration.setApiKey(ConfigFactory.load().getString("eventful.token"));
 		APIConfiguration.setEvdbUser(ConfigFactory.load().getString("eventful.user"));

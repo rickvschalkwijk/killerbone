@@ -1,11 +1,11 @@
-@(userPage: helpers.Pagination.Page[models.User])
+@(userPage: helpers.Pagination.Page[models.User], orderBy: String, filter: String)
 
 @setPage(newPage: Int) = @{
     controllers.admin.routes.UserManagement.index(newPage) 
 }
 
 @toUserLink(user: User) = {
-	<a href="@controllers.admin.routes.UserManagement.displayUserOverview(user.userId)">@user.name</a>
+	<a href="@controllers.admin.routes.UserManagement.displayUser(user.userId)">@user.name</a>
 }
 
 @layout.master(title = "KillerBone CP", page = "Users") {
@@ -34,14 +34,21 @@
 		<table class="table table-bordered">
 			<thead>
 				<tr>
-					<th>Name</th>
-					<th>E-mail</th>
-					<th>Last activity</th>
+					<th style="width: 5%;">Identifier</th>
+					<th style="width: 35%;">Name</th>
+					<th style="width: 35%;">Email</th>
+					<th style="width: 25%;">Last activity</th>
 				</tr>
 			</thead>
 			<tbody>
+				@if(userPage.getList.size == 0) {
+					<tr>
+						<td style="text-align: center;" colspan="4">No users found.</td>
+					</tr>
+				}
 				@for(user <- userPage.getList) {
 					<tr>
+						<td>@user.userId</td>
 						<td>
 							@toUserLink(user)
 							@if(user.isAdmin) { <span class="label">Admin</span> }
@@ -78,9 +85,9 @@
 				</td>
 				<td>
 					<div class="pull-right">
-						<a id="search-user" class="btn">
-							<i class="icon-search"></i> Search
-						</a>
+				 		<a href="#searchUserModal" role="button" class="btn" data-toggle="modal">
+				  			<i class="icon-search"></i> Search
+				  		</a>
 				 		<a href="#createUserModal" role="button" class="btn" data-toggle="modal">
 				  			<i class="icon-plus"></i> Create user
 				  		</a>
@@ -106,7 +113,7 @@
 					</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label">E-mail</label>
+					<label class="control-label">Email</label>
 					<div class="controls">
 						<input id="email" name="email" type="text" placeholder="" class="input-large" required="">
 					</div>
@@ -136,14 +143,49 @@
 	    	<a id="create-user" class="btn btn-primary">Send</a>
 	  	</div>
 	</div>	
+	<!-- Search User Modal -->
+	<div id="searchUserModal" class="modal hide fade" role="dialog" aria-labelledby="searchUserModal" aria-hidden="true">
+		<div class="modal-header">
+	    	<h3 id="myModalLabel">Search</h3>
+	  	</div>
+	  	<div class="modal-body">
+	  	<p>Fill in the form and click on send to search for users.</p>
+	  	<br />
+	  	<form method="GET" id="form-searchuser" class="form-horizontal">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">Search</label>
+					<div class="controls">
+						<input id="filter" name="filter" type="text" value="@filter" placeholder="" class="input-large" required="">
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">Orderby</label>
+					<div class="controls">
+						<select id="orderBy" name="orderBy">
+							<option @if(orderBy == "") { selected="selected" } value="">Identifier</option>
+							<option @if(orderBy == "name") { selected="selected" } value="name">Name</option>
+							<option @if(orderBy == "email") { selected="selected" } value="email">Email</option>
+							<option @if(orderBy == "lastActivityDate") { selected="selected" } value="lastActivityDate">Last activity</option>
+						</select>
+					</div>
+				</div>
+			</fieldset>
+	  	</form>
+	  	</div>
+	  	<div class="modal-footer">
+			<a id="close-modal" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+	    	<a id="search-user" class="btn btn-primary">Send</a>
+	  	</div>
+	</div>
 } {
 	jQuery('.timeago').timeago();
 	
 	jQuery('#search-user').click(function() {
-		alert('not yet implemented');
+		jQuery('#form-searchuser').submit();
 	});
-	
+		
 	jQuery('#create-user').click(function() {
-		jQuery('#form-createuser').submit()
+		jQuery('#form-createuser').submit(); 
 	});
 }
