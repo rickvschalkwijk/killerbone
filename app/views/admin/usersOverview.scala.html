@@ -94,6 +94,11 @@
 				 		<a href="#searchUserModal" role="button" class="btn" data-toggle="modal">
 				  			<i class="icon-search"></i> Search
 				  		</a>
+				  		@if(orderBy != "" || filter != "") {
+					 		<a href='@controllers.admin.routes.UserManagement.index(0, "", "")' class="btn">
+					  			<i class="icon-repeat"></i> Reset
+					  		</a>				  		
+				  		}
 				 		<a href="#createUserModal" role="button" class="btn" data-toggle="modal">
 				  			<i class="icon-plus"></i> Create user
 				  		</a>
