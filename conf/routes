@@ -21,16 +21,16 @@ GET		/development/generate/dummydata					controllers.Development.generateDummyDa
 # API Event Manager
 GET		/events											controllers.api.EventManager.getAllEvents()
 GET		/events/new/:timestamp							controllers.api.EventManager.getNewEvents(timestamp : Long)
+GET		/events/categories								controllers.api.EventManager.getAllCategories()
 GET		/events/:category								controllers.api.EventManager.getAllEventsFromCategory(category : String)
 GET		/events/:category/new/:timestamp				controllers.api.EventManager.getNewEventsFromCategory(category : String, timestamp : Long)
-GET		/events/categories								controllers.api.EventManager.getAllCategories()
 
 # API Friendship Manager
 GET		/friendships/:userId							controllers.api.FriendshipManager.getUserFriendships(userId : Long)
 POST	/friendship										controllers.api.FriendshipManager.createFriendship()
 PUT		/friendship/:friendshipId/accept/:userId 		controllers.api.FriendshipManager.acceptFriendship(friendshipId : Long, userId : Long)
 PUT		/friendship/:friendshipId/decline/:userId 		controllers.api.FriendshipManager.declineFriendship(friendshipId : Long, userId : Long)
-PUT		/friendship/:friendshipId/end/:userId			controllers.api.FriendshipManager.endFriendship(friendshipId : Long, userId : Long)
+DELETE	/friendship/:friendshipId/end/:userId			controllers.api.FriendshipManager.endFriendship(friendshipId : Long, userId : Long)
 PUT		/friendship/:friendshipId/location/:userId		controllers.api.FriendshipManager.shareLocationWithFriendship(friendshipId : Long, userId : Long)
 
 # API User Manager
