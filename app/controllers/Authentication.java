@@ -8,6 +8,7 @@ import play.libs.XPath;
 import play.mvc.*;
 import views.xml.api.*;
 import utils.Authenticator;
+import controllers.admin.routes;
 
 public class Authentication extends Controller
 {
@@ -50,7 +51,7 @@ public class Authentication extends Controller
 			session("UserId", String.valueOf(user.userId));
 			session("Name", user.name);
 			session("AuthToken", authToken);
-			return redirect(controllers.admin.routes.Dashboard.index());
+			return redirect(routes.Dashboard.index());
 		}
 		else
 		{ 
@@ -58,7 +59,7 @@ public class Authentication extends Controller
 			flash("login.failed", "");
 			flash("login.email", email);
 			flash("login.password", password);
-			return redirect(controllers.routes.Application.login());
+			return redirect(routes.Dashboard.login());
 		}				
 	}
 }

@@ -2,16 +2,7 @@ package utils;
 
 import helpers.Settings;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.joda.time.DateTime;
-
-import models.EventCategory;
-
-import com.avaje.ebean.Ebean;
-import com.evdb.javaapi.APIConfiguration;
-import com.typesafe.config.ConfigFactory;
 
 import play.*;
 import play.mvc.Http.RequestHeader;
@@ -22,29 +13,17 @@ public class Global extends GlobalSettings
 	@Override
 	public void onStart(Application app)
 	{
-		// General settings
+		// Setup statistics
 		Settings.set("application.startupdate", DateTime.now().toString("hh:mm a, dd MMMM yyy"));
 		
-		// Setup Eventful API
-		APIConfiguration.setApiKey(ConfigFactory.load().getString("eventful.token"));
-		APIConfiguration.setEvdbUser(ConfigFactory.load().getString("eventful.user"));
-		APIConfiguration.setEvdbPassword(ConfigFactory.load().getString("eventful.password"));
-		
-		// Setup Eventful Categories
-		if (EventCategory.find.all().size() == 0)
-		{
-			List<EventCategory> categories = new ArrayList<EventCategory>();
-			categories.add(new EventCategory("Music", "music"));
-			categories.add(new EventCategory("Art", "art"));
-			categories.add(new EventCategory("Nightlife", "singles_social"));
-			Ebean.save(categories);
-		}
+		// Setup eventful
+		EventfulApi.setupEventfulApi(true);
 	}
 
 	@Override
 	public void onStop(Application app)
 	{
-		
+
 	}
 	
 	@Override

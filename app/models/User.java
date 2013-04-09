@@ -23,6 +23,7 @@ public class User extends Model
 	public String name;
 
 	@Length(max = 50)
+	@Column(unique = true)
 	public String email;
 
 	@Length(max = 255)
@@ -48,9 +49,9 @@ public class User extends Model
 
 	public User()
 	{
-		// Default values
 		initiatedFriendships = new ArrayList<Friendship>();
 		participatedFriendships = new ArrayList<Friendship>();
+		creationDate = DateTime.now();
 		lastActivityDate = DateTime.now();
 	}
 

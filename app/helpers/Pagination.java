@@ -10,6 +10,14 @@ import com.avaje.ebean.Query;
 
 public class Pagination
 {
+	/**
+	 * Creates a pagination page for the user table.
+	 * @param int
+	 * @param int
+	 * @param String
+	 * @param String
+	 * @return Page<User>
+	 */
 	public static Page<User> getUserPage(int page, int pageSize, String orderBy, String filter)
 	{
 		if (page < 1)

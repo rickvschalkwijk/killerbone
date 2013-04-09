@@ -38,7 +38,6 @@ public class Friendship extends Model
 	
 	public Friendship()
 	{
-		// Set default values
 		status = FriendshipStatus.PENDING;
 		memberLocations = new ArrayList<FriendshipLocation>();
 	}

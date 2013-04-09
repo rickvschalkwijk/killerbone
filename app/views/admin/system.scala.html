@@ -10,7 +10,11 @@
 		<h5>Application information</h5>
 		<table class="table table-bordered">
 			<tr>
-				<td style="width: 45%;">Startup time:</td>
+				<td>Version</td>
+				<td>@com.typesafe.config.ConfigFactory.load().getString("application.version")</td>
+			</tr>		
+			<tr>
+				<td style="width: 45%;">Startup:</td>
 				<td>
 					<span class="timeago" title='@helpers.Settings.get("application.startupdate")'>
 						@helpers.Settings.get("application.startupdate")

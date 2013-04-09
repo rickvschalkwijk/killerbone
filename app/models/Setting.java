@@ -27,7 +27,6 @@ public class Setting extends Model
 
 	public Setting()
 	{
-		// Default values
 	}
 	
 	public Setting(String key, String value)

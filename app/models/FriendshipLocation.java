@@ -33,7 +33,6 @@ public class FriendshipLocation extends Model
 	
 	public FriendshipLocation()
 	{
-		// Default values
 	}
 	
 	public FriendshipLocation(User user, Friendship friendship, double latitude, double longitude, DateTime refreshDate)

@@ -54,7 +54,6 @@ public class Event extends Model
 	
 	public Event()
 	{
-		// Default values
 	}
 	
 	public Event(String eventfulId, String title, String description, double latitude, double longitude, DateTime startDate, DateTime endDate, String price, boolean isFree)

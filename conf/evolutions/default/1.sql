@@ -68,6 +68,7 @@ create table user (
   last_known_location       varchar(255),
   last_activity_date        datetime,
   creation_date             datetime,
+  constraint uq_user_email unique (email),
   constraint pk_user primary key (user_id))
 ;
 

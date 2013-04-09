@@ -23,6 +23,12 @@
 			<strong>@flash.get("user.create.name")</strong> has been successfully created. 
 		</div> 
 	}	
+	@if(flash.containsKey("user.create.failed")) {
+		<div class="alert alert-error">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<strong>Failed</strong> to create user, was the provided information valid and unique? 
+		</div> 
+	}
 	@if(flash.containsKey("user.deleted")) {
 		<div class="alert alert-success">
 			<button type="button" class="close" data-dismiss="alert">&times;</button>

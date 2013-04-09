@@ -1,14 +1,17 @@
 package controllers.admin;
 
+import javax.persistence.PersistenceException;
+
 import org.joda.time.DateTime;
 
 import com.avaje.ebean.Ebean;
-
+import controllers.admin.routes;
 import models.User;
 import helpers.Common;
 import helpers.Pagination;
 import helpers.Pagination.Page;
 import helpers.Validator;
+import play.Logger;
 import play.data.DynamicForm;
 import play.mvc.Result;
 import utils.Security.Authorized;
@@ -23,8 +26,6 @@ public class UserManagement extends AdminController
 	{
 		// Display all users
 		Page<User> users = Pagination.getUserPage(page, 25, orderBy, filter);
-		
-		
 		return ok(usersOverview.render(users, orderBy, filter));
 	}
 	
@@ -36,7 +37,7 @@ public class UserManagement extends AdminController
 		{
 			return ok(userOverview.render(user));
 		}
-		return redirect(controllers.admin.routes.UserManagement.index(1, "", ""));
+		return redirect(routes.UserManagement.index(1, "", ""));
 	}
 	
 	//-----------------------------------------------------------------------//
@@ -44,6 +45,7 @@ public class UserManagement extends AdminController
 	@Authorized(redirectToLogin = false)
 	public static Result createUser()
 	{
+		boolean operationSucceeded = false;
 		DynamicForm requestData = DynamicForm.form().bindFromRequest();
 		
 		// Gather required information
@@ -56,28 +58,24 @@ public class UserManagement extends AdminController
 		if (Validator.validateName(name) && Validator.validateEmail(email) && Validator.validatePassword(password))
 		{
 			User newUser = new User(name, email, password, DateTime.now());
-			
-			// Set options
-			if (!Common.isNullOrEmpty(isActivated) && isActivated.equals("on")) 
+			newUser.isAdmin = !Common.isNullOrEmpty(isAdmin);
+			newUser.isActivated = !Common.isNullOrEmpty(isActivated);
+
+			try
 			{
-				newUser.isActivated = true;
+				Ebean.save(newUser);	
+				
+				operationSucceeded = true;
+				flash("user.create.name", newUser.name);				
 			}
-			if (!Common.isNullOrEmpty(isAdmin) && isAdmin.equals("on"))
+			catch(PersistenceException e)
 			{
-				newUser.isAdmin = true;
+				Logger.error("An error occured while creating user: " + e.getMessage());
 			}
-			
-			// Create user
-			Ebean.save(newUser);			
-			flash("user.create.success", "");
-			flash("user.create.name", newUser.name);
-			flash("user.create.id", String.valueOf(newUser.userId));
 		}
-		else
-		{
-			flash("user.create.failed", "");
-		}
-		return redirect(controllers.admin.routes.UserManagement.index(1, "", ""));
+
+		flash().put(operationSucceeded ? "user.create.success" : "user.create.failed", "");
+		return redirect(routes.UserManagement.index(1, "", ""));
 	}
 	
 	@Authorized(redirectToLogin = false)
@@ -92,13 +90,13 @@ public class UserManagement extends AdminController
 		
 		// Update user
 		if (user != null) {
-			user.isAdmin = (isAdmin != null && isAdmin.equals("on") ? true : false);
-			user.isActivated  = (isActivated != null && isActivated.equals("on") ? true : false);
+			user.isAdmin = !Common.isNullOrEmpty(isAdmin);
+			user.isActivated  = !Common.isNullOrEmpty(isActivated);
 			user.save();
 			
 			flash("user.updated", "");
 		}
-		return redirect(controllers.admin.routes.UserManagement.displayUser(userId));
+		return redirect(routes.UserManagement.displayUser(userId));
 	}
 	
 	
@@ -111,7 +109,7 @@ public class UserManagement extends AdminController
 			Ebean.delete(user);
 			flash("user.deleted", user.name);
 		}
-		return redirect(controllers.admin.routes.UserManagement.index(1, "", ""));	
+		return redirect(routes.UserManagement.index(1, "", ""));	
 	}
 	
 	@Authorized(redirectToLogin = false)
@@ -124,6 +122,6 @@ public class UserManagement extends AdminController
 			
 			flash("user.password-reset", "");
 		}
-		return redirect(controllers.admin.routes.UserManagement.displayUser(userId));
+		return redirect(routes.UserManagement.displayUser(userId));
 	}
 }

@@ -1,84 +1,80 @@
 package controllers.api;
 
 import helpers.Common;
-import helpers.Server;
 import models.User;
 import org.joda.time.DateTime;
 import org.w3c.dom.Document;
 
+import com.avaje.ebean.Ebean;
+
+import core.ApiController;
+
+import play.Logger;
 import play.libs.XPath;
 import play.mvc.*;
-import utils.Authenticator;
 import helpers.Validator;
 import views.xml.api.*;
 
-public class UserManager extends Controller
+public class UserManager extends ApiController
 {
 	public static Result getUser(long userId)
 	{
-		Authenticator authenticator = new Authenticator();
+		if (!isAuthorized(userId)) { return unAuthorized(); }
 		
-		// Users may only get information about their own account
-		String authToken = Server.getHeaderValue("AuthToken");
-		if (authenticator.validateAuthToken(userId, false, authToken))
+		User user = User.find.byId(userId);
+		if (user != null)
 		{
-			// Find user by id
-			User user = User.find.byId(userId);
-			if (user != null)
-			{
-				return ok(userSingle.render(user).body().trim()).as("text/xml");
-			}
+			return ok(userSingle.render(user).body().trim()).as("text/xml");
 		}
-		
-		return ok(message.render("USER_GET_FAILED", "").body().trim()).as("text/xml");
+		return operationFailed();
 	}
 	
 	//-----------------------------------------------------------------------//
 	
 	public static Result createUser()
 	{
+		// Parse required information
+		boolean operationSucceeded = false;
 		Document xmlDocument = request().body().asXml();
 		
-		// Gather required user information
-		String name = XPath.selectText("/user/name", xmlDocument).trim();
-		String email = XPath.selectText("/user/email", xmlDocument).trim();
-		String password = XPath.selectText("/user/password", xmlDocument).trim();
-		
-		boolean operationSucceeded = false;
-		
-		// Validate user information
-		if (Validator.validateName(name) || Validator.validateEmail(email) || Validator.validatePassword(password))
+		try
 		{
-			// Create new user
-			User newUser = new User(name, email, password, DateTime.now());
-			newUser.save();
-			
-			operationSucceeded = (newUser.userId > 0);
-		}
+			String name = XPath.selectText("/user/name", xmlDocument).trim();
+			String email = XPath.selectText("/user/email", xmlDocument).trim();
+			String password = XPath.selectText("/user/password", xmlDocument).trim();
+		
+			// Validate user information
+			if (Validator.validateName(name) || Validator.validateEmail(email) || Validator.validatePassword(password))
+			{
+				User newUser = new User(name, email, password, DateTime.now());
 				
-		// Respond with xml message
-		String messageCode = (operationSucceeded ? "USER_CREATE_SUCCESS" : "USER_CREATE_FAILED");
-		return ok(message.render(messageCode, "").body().trim()).as("text/xml");
+				Ebean.save(newUser);
+				operationSucceeded = (newUser.userId != 0);
+			}
+		}
+		catch(RuntimeException e)
+		{
+			Logger.error("An error occured while creating user: " + e.getMessage());
+		}
+		return (operationSucceeded ? operationSuccess() : operationFailed());
 	}
 	
 	//-----------------------------------------------------------------------//
 	
 	public static Result updateUser(long userId)
 	{
-		Authenticator authenticator = new Authenticator();
-		Document xmlDocument = request().body().asXml();
+		if (!isAuthorized(userId)) { return unAuthorized(); }
+		
+		// Parse required information
 		boolean operationSucceeded = false;
-
-		// Users may only update their own account, having a valid authtoken
-		String authToken = Server.getHeaderValue("AuthToken");
-		if (authenticator.validateAuthToken(userId, false, authToken))
+		Document xmlDocument = request().body().asXml();
+		
+		try
 		{
-			// Gather required user information
 			String name = XPath.selectText("/user/name", xmlDocument);
 			String email = XPath.selectText("/user/email", xmlDocument);
 			String password = XPath.selectText("/user/password", xmlDocument);
 			
-			// Find and update user by id
 			User user = User.find.byId(userId);
 			if (user != null)
 			{
@@ -86,38 +82,30 @@ public class UserManager extends Controller
 				if (!Common.isNullOrEmpty(email)) { user.email = email.trim(); }
 				if (!Common.isNullOrEmpty(password)) { user.password = password.trim(); }
 
-				user.save();
+				Ebean.save(user);
 				operationSucceeded = true;
 			}
 		}
-		
-		String messageCode = (operationSucceeded ? "USER_UPDATE_SUCCESS" : "USER_UPDATE_FAILED");
-		return ok(message.render(messageCode, "").body().trim()).as("text/xml");
+		catch(RuntimeException e)
+		{
+			Logger.error("An error occured while updating user (" + userId + "): " + e.getMessage());
+		}
+		return (operationSucceeded ? operationSuccess() : operationFailed());
 	}
 
 	//-----------------------------------------------------------------------//
 	
 	public static Result deleteUser(long userId)
 	{
-		Authenticator authenticator = new Authenticator();
+		if (!isAuthorized(userId)) { return unAuthorized(); }
 		
-		boolean operationSucceeded = false;
-		
-		// Users may only delete their own account, having a valid authtoken
-		String authToken = Server.getHeaderValue("AuthToken");
-		if (authenticator.validateAuthToken(userId, false, authToken))
+		User user = User.find.byId(userId);
+		if (user != null)
 		{
-			// Find and delete user by id
-			User user = User.find.byId(userId);
-			if (user != null)
-			{
-				user.delete();
-			}
+			Ebean.delete(user);
 			
-			operationSucceeded = (user != null && User.find.byId(userId) == null);
-		}	
-		
-		String messageCode = (operationSucceeded ? "USER_DELETE_SUCCESS" : "USER_DELETE_FAILED");
-		return ok(message.render(messageCode, "").body().trim()).as("text/xml");
+			return operationSuccess();
+		}
+		return operationFailed();
 	}
 }

@@ -3,13 +3,14 @@ package controllers.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import core.ApiController;
+
 import models.Event;
 import models.EventCategory;
-import play.mvc.Controller;
 import play.mvc.Result;
 import views.xml.api.*;
 
-public class EventManager extends Controller
+public class EventManager extends ApiController
 {
 	public static Result getAllEvents()
 	{
@@ -35,7 +36,7 @@ public class EventManager extends Controller
 		{
 			return ok(eventList.render(category.events).body().trim()).as("text/xml");
 		}
-		return ok(message.render("CATEGORY_EVENTS_GET_FAILED", "").body().trim()).as("text/xml");
+		return operationFailed();
 	}
 
 	//-----------------------------------------------------------------------//
@@ -59,7 +60,7 @@ public class EventManager extends Controller
 			}
 			return ok(eventList.render(newEvents).body().trim()).as("text/xml");
 		}
-		return ok(message.render("CATEGORY_NEW_EVENTS_GET_FAILED", "").body().trim()).as("text/xml");
+		return operationFailed();
 	}	
 	
 	//-----------------------------------------------------------------------//

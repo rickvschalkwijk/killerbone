@@ -2,8 +2,6 @@
 
 # Application
 GET     /												controllers.Application.index()
-GET		/admin/login									controllers.Application.login()
-GET		/admin/logout									controllers.Application.logout()
 GET		/eventful/repopulate							controllers.Application.repopulateEventfulContent()
 GET     /assets/*file               					controllers.Assets.at(path="/public", file)
 
@@ -45,6 +43,8 @@ DELETE	/user/:userId									controllers.api.UserManager.deleteUser(userId : Lon
 
 # Admin Dashboard
 GET		/admin											controllers.admin.Dashboard.index()
+GET		/admin/login									controllers.admin.Dashboard.login()
+GET		/admin/logout									controllers.admin.Dashboard.logout()
 
 # Admin Event Management
 GET		/admin/events									controllers.admin.EventManagement.index()

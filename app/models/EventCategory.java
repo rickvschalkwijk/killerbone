@@ -33,7 +33,6 @@ public class EventCategory extends Model
 
 	public EventCategory()
 	{
-		// Default values
 		events = new ArrayList<Event>();
 	}
 

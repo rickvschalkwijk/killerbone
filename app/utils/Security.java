@@ -8,10 +8,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import play.mvc.Action;
-import play.mvc.Http;
-import play.mvc.Result;
-import play.mvc.With;
+import play.mvc.*;
+import play.mvc.Http.*;
+
+import controllers.admin.routes;
 
 public class Security
 {
@@ -25,7 +25,7 @@ public class Security
 	
 	public static class AuthorizedAction extends Action<Authorized>
 	{
-		public Result call(Http.Context ctx) throws Throwable
+		public Result call(Context ctx) throws Throwable
 		{
 			Authenticator authenticator = new Authenticator();
 			boolean isAuthorized = false;
@@ -33,7 +33,7 @@ public class Security
 			String userId = ctx.session().get("UserId");
 			String authToken = ctx.session().get("AuthToken");
 			
-			if (!Common.isNullOrEmpty(userId) && Validator.validateNumeric(userId) && !Common.isNullOrEmpty(authToken))
+			if (Validator.validateNumeric(userId) && !Common.isNullOrEmpty(authToken))
 			{
 				isAuthorized = authenticator.validateAuthToken(Long.valueOf(userId), true, authToken);
 				if (isAuthorized)
@@ -43,7 +43,7 @@ public class Security
 			}
 			if (configuration.redirectToLogin())
 			{
-				return redirect(controllers.routes.Application.login());
+				return redirect(routes.Dashboard.login());
 			}
 			return forbidden();
 		}
