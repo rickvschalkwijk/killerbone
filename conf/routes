@@ -47,7 +47,9 @@ GET		/admin/login									controllers.admin.Dashboard.login()
 GET		/admin/logout									controllers.admin.Dashboard.logout()
 
 # Admin Event Management
-GET		/admin/events									controllers.admin.EventManagement.index()
+GET		/admin/events									controllers.admin.EventManagement.index(page: Integer ?= 1, orderBy: String ?= "", filter: String ?="")
+GET		/admin/event/:eventId							controllers.admin.EventManagement.displayEvent(eventId: Long)
+POST	/admin/event/:eventId/update					controllers.admin.EventManagement.updateEvent(eventId: Long)
 
 # Admin User Management
 GET		/admin/users									controllers.admin.UserManagement.index(page: Integer ?= 1, orderBy: String ?= "", filter: String ?="")

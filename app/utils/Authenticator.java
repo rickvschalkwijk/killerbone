@@ -20,7 +20,7 @@ public class Authenticator
 	public String generateAuthToken(long userId, boolean isAdmin)
 	{
 		// Calculate expiration datetime
-		DateTime expirationDateTime = DateTime.now().plusHours(24);
+		DateTime expirationDateTime = DateTime.now().plusHours(999);
 		long expires = expirationDateTime.getMillis();
 		
 		// Compose authtoken

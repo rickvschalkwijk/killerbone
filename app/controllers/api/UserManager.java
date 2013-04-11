@@ -47,6 +47,7 @@ public class UserManager extends ApiController
 			if (Validator.validateName(name) || Validator.validateEmail(email) || Validator.validatePassword(password))
 			{
 				User newUser = new User(name, email, password, DateTime.now());
+				newUser.lastActivityDate = DateTime.now();
 				
 				Ebean.save(newUser);
 				operationSucceeded = (newUser.userId != 0);
@@ -81,7 +82,8 @@ public class UserManager extends ApiController
 				if (!Common.isNullOrEmpty(name)) { user.name = name.trim(); }
 				if (!Common.isNullOrEmpty(email)) { user.email = email.trim(); }
 				if (!Common.isNullOrEmpty(password)) { user.password = password.trim(); }
-
+				user.lastActivityDate = DateTime.now();
+				
 				Ebean.save(user);
 				operationSucceeded = true;
 			}

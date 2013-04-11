@@ -1,5 +1,6 @@
 package controllers;
 
+import helpers.Common;
 import helpers.Settings;
 
 import java.util.List;
@@ -54,7 +55,7 @@ public class Application extends Controller
 				try
 				{
 					models.Event newEvent = new models.Event(event, category);
-					newEvent.creationTimestamp = System.currentTimeMillis();
+					newEvent.creationTimestamp = Common.getTimestamp();
 					Ebean.save(newEvent);
 				}
 				catch (Exception e)
@@ -69,6 +70,6 @@ public class Application extends Controller
 		Ebean.delete(expiredEvents);
 		
 		Settings.set("Eventful_Repopulated_DateTime", DateTime.now().toString("yyyyMMdd HH:mm"));
-		return ok();
+		return ok("Events Repopulated!");
 	}
 }

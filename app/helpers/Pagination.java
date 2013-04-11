@@ -2,6 +2,7 @@ package helpers;
 
 import java.util.List;
 
+import models.Event;
 import models.User;
 
 import com.avaje.ebean.Ebean;
@@ -20,18 +21,9 @@ public class Pagination
 	 */
 	public static Page<User> getUserPage(int page, int pageSize, String orderBy, String filter)
 	{
-		if (page < 1)
-		{
-			page = 1;
-		}
-		if (orderBy == null)
-		{
-			orderBy = "";
-		}
-		if (filter == null)
-		{
-			filter = "";
-		}
+		page = Math.max(page, 1);
+		orderBy = Common.ensureNotNull(orderBy);
+		filter = Common.ensureNotNull(filter);
 
 		// Compose query
 		Query<User> query = Ebean.find(User.class)
@@ -46,6 +38,35 @@ public class Pagination
 		int totalRowCount = query.findRowCount();
 		
 		return new Page<User>(users, totalRowCount, page, pageSize);		
+	}
+	
+	/**
+	 * Creates a pagination page for the event table.
+	 * @param int
+	 * @param int
+	 * @param String
+	 * @param String
+	 * @return Page<Event>
+	 */	
+	public static Page<Event> getEventPage(int page, int pageSize, String orderBy, String filter)
+	{
+		page = Math.max(page, 1);
+		orderBy = Common.ensureNotNull(orderBy);
+		filter = Common.ensureNotNull(filter);
+		
+		// Compose query
+		Query<Event> query = Ebean.find(Event.class)
+								  .setFirstRow((page - 1) * pageSize)
+								  .setMaxRows(pageSize)
+								  .where()
+								  .like("title", "%" + filter + "%")
+								  .orderBy(orderBy);
+		
+		// Execute query
+		List<Event> events = query.findList();
+		int totalRowCount = query.findRowCount();
+		
+		return new Page<Event>(events, totalRowCount, page, pageSize);	
 	}
 	
 	//-----------------------------------------------------------------------//
@@ -87,7 +108,7 @@ public class Pagination
 
 		public boolean hasNext()
 		{
-			return (totalRowCount / pageSize) > pageIndex;
+			return (totalRowCount / pageSize) >= pageIndex;
 		}
 
 		public String getDisplayXtoYofZ()

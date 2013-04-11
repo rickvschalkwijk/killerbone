@@ -24,8 +24,7 @@ public class UserManagement extends AdminController
 	@Authorized
 	public static Result index(int page, String orderBy, String filter)
 	{
-		// Display all users
-		Page<User> users = Pagination.getUserPage(page, 25, orderBy, filter);
+		Page<User> users = Pagination.getUserPage(page, 15, orderBy, filter);
 		return ok(usersOverview.render(users, orderBy, filter));
 	}
 	
@@ -98,7 +97,6 @@ public class UserManagement extends AdminController
 		}
 		return redirect(routes.UserManagement.displayUser(userId));
 	}
-	
 	
 	@Authorized(redirectToLogin = false)
 	public static Result deleteUser(long userId)

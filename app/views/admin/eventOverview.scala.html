@@ -1,0 +1,86 @@
+@(event: models.Event)
+
+@layout.master(title = "KillerBone CP", page = "Events") {
+	<li>
+		<a href="@controllers.admin.routes.Dashboard.index()">Home</a>
+		<span class="divider">/</span>
+	</li>
+	<li>
+		<a href="@controllers.admin.routes.EventManagement.index()">Events</a>
+		<span class="divider">/</span>
+	</li>	
+	<li class="active">
+		@event.title
+	</li>
+} {
+	@if(flash.containsKey("event.updated")) {
+		<div class="alert alert-success">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<strong>@event.title</strong> has been successfully updated. 
+		</div>
+	}
+	<fieldset>
+		<legend>
+			@event.title
+		</legend>
+		@helper.form(action = controllers.admin.routes.EventManagement.updateEvent(event.eventId), 'id -> "form-updateevent") {
+			<table class="table table-bordered">
+				<tbody>
+					<tr>
+						<td>Identifier</td>
+						<td style="width: 75%;">@event.eventId</td>
+					</tr>
+					<tr>
+						<td>Category</td>
+						<td>@event.category.title</td>
+					</tr>			
+					<tr>
+						<td>Start date</td>
+						<td>@event.startDate.toString("hh:mm a, dd MMMM yyy")</td>
+					</tr>
+					<tr>
+						<td>End date</td>
+						<td>@event.startDate.toString("hh:mm a, dd MMMM yyy")</td>
+					</tr>					
+					<tr>
+						<td style="vertical-align: middle;">Title</td>
+						<td><input type="text" name="title" style="margin: 0px;" class="input-xxlarge" value="@event.title" /></td>
+					</tr>	
+					<tr>
+						<td style="vertical-align: middle;">Price</td>
+						<td><input type="text" name="price" style="margin: 0px;" class="input-xxlarge" value="@event.price" /></td>
+					</tr>	
+					<tr>
+						<td style="vertical-align: top;">Description</td>
+						<td>
+							<textarea name="description" class="textarea" rows="10" class="input-xxlarge" style="width: 95%; height: 220px;">@event.description</textarea>
+						</td>
+					</tr>
+					@if(event.modifiedTimestamp != 0) {
+						<tr>
+							<td>Modification date</td>
+							<td>
+								<span class="timeago" title="@helpers.Common.timestampToDateTimeString(event.modifiedTimestamp)">
+									@helpers.Common.timestampToDateTimeString(event.modifiedTimestamp)
+								</span>
+							</td>
+						</tr>	
+					}			
+				</tbody>
+			</table>
+		}			
+		<div class="pull-right">
+			<a id="update-event" class="btn btn-primary">
+				<i class="icon-white icon-ok"></i> Update
+			</a>				
+		</div>
+	</fieldset>
+} {
+	jQuery('.timeago').timeago();
+	
+	jQuery('#update-event').click(function() {
+		jQuery('#form-updateevent').submit();
+	});
+	
+	jQuery('.textarea').wysihtml5();
+}

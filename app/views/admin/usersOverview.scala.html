@@ -1,7 +1,7 @@
 @(userPage: helpers.Pagination.Page[models.User], orderBy: String, filter: String)
 
 @setPage(newPage: Int) = @{
-    controllers.admin.routes.UserManagement.index(newPage) 
+    controllers.admin.routes.UserManagement.index(newPage, orderBy, filter) 
 }
 
 @toUserLink(user: User) = {

@@ -5,6 +5,7 @@
 	    <meta charset="utf-8">
 	    <title>@Html(title + " &bull; " + page)</title>
 		<link rel='stylesheet' type='text/css' href='@routes.Assets.at("css/bootstrap.css")'>
+		<link rel='stylesheet' type='text/css' href='@routes.Assets.at("css/bootstrap-wysihtml5.css")'>
 		<link rel='stylesheet' type='text/css' href='@routes.Assets.at("css/style.css")'>		
   	</head>
   	<body>
@@ -49,9 +50,11 @@
 		</div>
 		<!-- JavaScript includes -->
 		<script type='text/javascript' src='@routes.Assets.at("js/jquery.js")'></script>
-		<script type='text/javascript' src='@routes.Assets.at("js/jquery.timeago.js")'></script>
+		<script type='text/javascript' src='@routes.Assets.at("js/jquery-timeago.js")'></script>
+		<script type='text/javascript' src='@routes.Assets.at("js/wysihtml5-0.3.0.js")'></script>	
 		<script type='text/javascript' src='@routes.Assets.at("js/bootstrap.js")'></script>
-		<script type='text/javascript' src='@routes.Assets.at("js/bootbox.js")'></script>
+		<script type='text/javascript' src='@routes.Assets.at("js/bootstrap-wysihtml5.js")'></script>		
+		<script type='text/javascript' src='@routes.Assets.at("js/bootstrap-bootbox.js")'></script>
 		<script type='text/javascript'>
 			jQuery(document).ready(function() {
 				@onDocumentReadyJs				
