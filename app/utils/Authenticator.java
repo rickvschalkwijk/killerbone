@@ -4,11 +4,11 @@ import org.joda.time.DateTime;
 
 import helpers.Common;
 import helpers.Cryptography;
+import helpers.Validator;
 
 public class Authenticator
 {
 	private final String AUTH_TOKEN_PREFIX = "_authtoken";
-	private final String AUTH_TOKEN_REGEX = ".*@(\\[\\w{5,6}:([0-9a-zA-Z]+)]\\+?)*";
 	
 	//-----------------------------------------------------------------------//
 	
@@ -45,7 +45,7 @@ public class Authenticator
 		
 		// Decrypt and validate authtoken
 		String authToken = Cryptography.decrypt(encryptedAuthToken);
-		if (Common.isNullOrEmpty(authToken) || !authToken.matches(AUTH_TOKEN_REGEX))
+		if (Common.isNullOrEmpty(authToken) || !Validator.validateAuthToken(authToken))
 		{
 			return false;
 		}	

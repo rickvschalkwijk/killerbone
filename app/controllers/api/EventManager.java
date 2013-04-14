@@ -25,8 +25,8 @@ public class EventManager extends ApiController
 	public static Result getNewEvents(long timestamp)
 	{
 		List<Event> events =  Event.find.where()
-										.or(Expr.gt("creationTimestamp", timestamp), 
-										    Expr.gt("modifiedTimestamp", timestamp))
+										.or(Expr.ge("creationTimestamp", timestamp), 
+										    Expr.ge("modifiedTimestamp", timestamp))
 										.findList();
 		
 		return ok(eventList.render(events).body().trim()).as("text/xml");
@@ -59,7 +59,7 @@ public class EventManager extends ApiController
 			// Filter new events
 			for (Event event : events)
 			{
-				if (event.creationTimestamp > timestamp || event.modifiedTimestamp > timestamp)
+				if (event.creationTimestamp >= timestamp || event.modifiedTimestamp >= timestamp)
 				{
 					newEvents.add(event);
 				}

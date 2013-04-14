@@ -33,11 +33,16 @@ PUT		/friendship/:friendshipId/decline/:userId 		controllers.api.FriendshipManag
 DELETE	/friendship/:friendshipId/end/:userId			controllers.api.FriendshipManager.endFriendship(friendshipId : Long, userId : Long)
 PUT		/friendship/:friendshipId/location/:userId		controllers.api.FriendshipManager.shareLocationWithFriendship(friendshipId : Long, userId : Long)
 
+# API Location Manager
+GET		/locations										controllers.api.LocationManager.getAllLocations()
+GET		/locations/new/:timestamp						controllers.api.LocationManager.getNewLocations(timestamp : Long)
+
 # API User Manager
 GET		/user/:userId									controllers.api.UserManager.getUser(userId : Long)
 POST	/user											controllers.api.UserManager.createUser()
 PUT		/user/:userId									controllers.api.UserManager.updateUser(userId : Long)
 DELETE	/user/:userId									controllers.api.UserManager.deleteUser(userId : Long)
+GET		/activate/user									controllers.api.UserManager.activateUser(code : String ?= "")
 
 #-----------------------------------------------------------------------------------------------------#
 
@@ -58,6 +63,13 @@ POST	/admin/user/create								controllers.admin.UserManagement.createUser()
 POST	/admin/user/:userId/update						controllers.admin.UserManagement.updateUser(userId : Long)
 POST	/admin/user/:userId/delete						controllers.admin.UserManagement.deleteUser(userId : Long)
 POST	/admin/user/:userId/resetPassword				controllers.admin.UserManagement.resetPassword(userId : Long)
+
+# Admin Location Managment
+GET		/admin/locations								controllers.admin.LocationManagement.index(page: Integer ?= 1, orderBy: String ?= "", filter: String ?="")
+GET		/admin/location/:locationId						controllers.admin.LocationManagement.displayLocation(locationId : Long)
+POST 	/admin/location/create							controllers.admin.LocationManagement.createLocation()
+POST	/admin/location/:locationId/update				controllers.admin.LocationManagement.updateLocation(locationId : Long)
+POST	/admin/location/:locationId/delete				controllers.admin.LocationManagement.deleteLocation(locationId : Long)
 
 # Admin System
 GET		/admin/system									controllers.admin.System.index()

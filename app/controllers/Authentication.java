@@ -23,8 +23,10 @@ public class Authentication extends Controller
 		
 		// Validate user credentials
 		User user = User.find.where().eq("email", email).eq("password", password).findUnique();
-		if (user != null)
+		if (user != null && user.isActivated)
 		{
+			User.updateLastActivity(user.userId);
+			
 			String authToken = authenticator.generateAuthToken(user.userId, false);
 			return ok(authtoken.render(authToken, user.userId).body().trim()).as("text/xml");
 		}

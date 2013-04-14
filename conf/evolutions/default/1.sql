@@ -50,6 +50,19 @@ create table friendship_location (
   constraint pk_friendship_location primary key (friendship_location_id))
 ;
 
+create table location (
+  location_id               bigint auto_increment not null,
+  title                     varchar(255) not null,
+  description               TEXT,
+  image_url                 varchar(255),
+  latitude                  double not null,
+  longitude                 double not null,
+  creation_timestamp        bigint not null,
+  modification_timestamp    bigint,
+  constraint uq_location_title unique (title),
+  constraint pk_location primary key (location_id))
+;
+
 create table setting (
   setting_id                bigint auto_increment not null,
   setting_key               varchar(50),
@@ -65,7 +78,6 @@ create table user (
   password                  varchar(255),
   is_admin                  tinyint(1) default 0,
   is_activated              tinyint(1) default 0,
-  last_known_location       varchar(255),
   last_activity_date        datetime,
   creation_date             datetime,
   constraint uq_user_email unique (email),
@@ -96,6 +108,8 @@ drop table event_category;
 drop table friendship;
 
 drop table friendship_location;
+
+drop table location;
 
 drop table setting;
 

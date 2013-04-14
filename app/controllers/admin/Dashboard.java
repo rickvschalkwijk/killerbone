@@ -24,5 +24,17 @@ public class Dashboard extends AdminController
 	{
 		session().clear();
 		return redirect(routes.Dashboard.login());
-	}	
+	}
+	
+	//-----------------------------------------------------------------------//
+	
+	public static Result sendTestEmail()
+	{
+		return ok();
+	}
+	
+	public static Result repopulateEventDatabase()
+	{
+		return ok();
+	}
 }

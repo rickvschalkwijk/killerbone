@@ -1,18 +1,23 @@
 package utils;
 
+import helpers.Common;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import models.EventCategory;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 
 import play.Logger;
 
 import com.avaje.ebean.Ebean;
+import com.avaje.ebean.Expr;
 import com.evdb.javaapi.APIConfiguration;
 import com.evdb.javaapi.EVDBAPIException;
 import com.evdb.javaapi.EVDBRuntimeException;
+import com.evdb.javaapi.data.Event;
 import com.evdb.javaapi.data.SearchResult;
 import com.evdb.javaapi.data.request.EventSearchRequest;
 import com.evdb.javaapi.operations.EventOperations;
@@ -56,6 +61,53 @@ public class EventfulApi
 		return sr;
 	}
 	
+	/**
+	 * Repopulates the event database with up-to-date events
+	 * @param String
+	 * @return boolean
+	 */
+	public boolean repopulateEvents(String previousRepopulationTimestamp)
+	{
+		long checkpointTimestamp = DateTime.now().minusHours(12).getMillis();
+		if (previousRepopulationTimestamp != null && DateTimeFormat.forPattern("yyyyMMdd HH:mm").parseDateTime(previousRepopulationTimestamp).isAfter(checkpointTimestamp))
+		{
+			return false;
+		}
+		
+		// Prepare eventful api
+		String location = "Amsterdam";
+		String dateRange = convertToDateRange(DateTime.now(), DateTime.now().plusHours(24*4));
+
+		// Retrieve events in each category
+		List<EventCategory> allEventCategories = EventCategory.find.all();
+		for (EventCategory category : allEventCategories)
+		{
+			SearchResult eventSearchResult = performEventSearch(location, category.systemName, dateRange);
+			
+			// Process events
+			List<Event> events = eventSearchResult.getEvents();
+			for (Event event : events)
+			{			
+				try
+				{
+					models.Event newEvent = new models.Event(event, category);
+					newEvent.creationTimestamp = Common.getTimestamp();
+					Ebean.save(newEvent);
+				}
+				catch (Exception e)
+				{
+					Logger.error("Failed to process event: " + event.getTitle() + " / " + event.getSeid());
+				}
+			}
+		}
+		
+		// Delete old, expired events
+		List<models.Event> expiredEvents = models.Event.find.where().lt("endDate", DateTime.now().minusHours(12)).findList();
+		Ebean.delete(expiredEvents);
+		
+		return true;
+	}
+	
 	//-----------------------------------------------------------------------//
 	
 	/**
@@ -90,4 +142,17 @@ public class EventfulApi
 			Ebean.save(categories);
 		}		
 	}	
+	
+	//-----------------------------------------------------------------------//
+	
+	public static int getNumberOfEvents()
+	{
+		return models.Event.find.findRowCount();
+	}
+	
+	public static long getNumberOfTodayNewEvents()
+	{
+		long beginOfDayInMillis = new DateTime().withMillisOfDay(0).getMillis();
+		return models.Event.find.where(Expr.ge("creationTimestamp", beginOfDayInMillis)).findRowCount();
+	}
 }

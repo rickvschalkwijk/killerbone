@@ -1,10 +1,59 @@
 @layout.master(title = "KillerBone CP", page = "Dashboard") {
 	<li class="active">Home</li>
 } {
-	<fieldset>
-		<legend>Dashboard</legend>
-		<p>Not Yet Implemented</p>
-	</fieldset>
+<div class="row-fluid">
+	<div class="span4">
+		<fieldset>
+			<legend>Users</legend>
+			<canvas id="userChart" width="345" height="175"></canvas>
+			<table class="table table-bordered">
+				<tr>
+					<td><div style="background-color: #0088CC; display: inline-block; width: 3px; height:21px;"></div> Total users</td>
+					<td style="width: 50%;">@models.User.getNumberOfUsers</td>
+				</tr>
+				<tr>
+					<td><div style="background-color: #F38630; display: inline-block; width: 3px; height:21px;"></div> New users</td>
+					<td style="width: 50%;">@models.User.getNumberOfWeekNewUsers</td>
+				</tr>
+				<tr>
+					<td><div style="background-color: #F7464A; display: inline-block; width: 3px; height:21px;"></div> Active users</td>
+					<td style="width: 50%;">@models.User.getNumberOfWeekActiveUsers</td>
+				</tr>				
+			</table>
+		</fieldset>
+	</div>
+	<div class="span4">
+		<fieldset>
+			<legend>Events</legend>
+			<canvas id="eventChart" width="345" height="175"></canvas>	
+			<table class="table table-bordered">
+				<tr>
+					<td><div style="background-color: #0088CC; display: inline-block; width: 3px; height:21px;"></div> Total events</td>
+					<td style="width: 50%;">@utils.EventfulApi.getNumberOfEvents</td>
+				</tr>
+				<tr>
+					<td><div style="background-color: #F38630; display: inline-block; width: 3px; height:21px;"></div> New events</td>
+					<td style="width: 50%;">@utils.EventfulApi.getNumberOfTodayNewEvents</td>
+				</tr>
+			</table>
+		</fieldset>
+	</div>
+	<div class="span4">
+		<fieldset>
+			<legend>Actions</legend>
+			<button class="btn">Repopulate event database</button>
+			<br/><br />
+			<button class="btn">Send test email</button>		
+		</fieldset>
+	</div>
+</div>
+<script type='text/javascript' src='@routes.Assets.at("js/chart.js")'></script>
 } {
-
+	var userChartCtx = document.getElementById("userChart").getContext("2d");
+	var userData = [{ value: @models.User.getNumberOfWeekNewUsers, color: "#F38630" }, { value: @models.User.getNumberOfWeekActiveUsers, color:"#F7464A" }, { value : @models.User.getNumberOfUsers, color : "#0088CC" }];
+	new Chart(userChartCtx).Doughnut(userData);
+	
+	var eventChartCtx = document.getElementById("eventChart").getContext("2d");
+	var eventData = [{ value: @utils.EventfulApi.getNumberOfTodayNewEvents, color:"#F38630" }, { value : @utils.EventfulApi.getNumberOfEvents, color : "#0088CC" }];
+	new Chart(eventChartCtx).Doughnut(eventData);
 }

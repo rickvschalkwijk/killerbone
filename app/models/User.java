@@ -5,6 +5,8 @@ import java.util.*;
 import javax.persistence.*;
 import org.joda.time.DateTime;
 
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.Expr;
 import com.avaje.ebean.validation.Length;
 
 import play.data.format.*;
@@ -32,9 +34,6 @@ public class User extends Model
 	public boolean isAdmin;
 	public boolean isActivated;
 
-	@Length(max = 255)
-	public String lastKnownLocation;
-
 	@Formats.DateTime(pattern = "dd-MM-yyyy HH:mm")
 	public DateTime lastActivityDate;	
 	
@@ -51,30 +50,47 @@ public class User extends Model
 	{
 		initiatedFriendships = new ArrayList<Friendship>();
 		participatedFriendships = new ArrayList<Friendship>();
-		creationDate = DateTime.now();
-		lastActivityDate = DateTime.now();
 	}
 
-	public User(String name, String email, String password, DateTime creationDate)
+	public User(String name, String email, String password)
 	{
 		this();
 
 		this.name = name;
 		this.email = email;
 		this.password = password;
-		this.creationDate = creationDate;
 	}
 
 	// -----------------------------------------------------------------------//
 
 	public static Finder<Long, User> find = new Finder<Long, User>(Long.class, User.class);
 	
-	// -----------------------------------------------------------------------//
 	
-	public void updateLastActivity()
+	public static void updateLastActivity(long userId)
 	{
-		lastActivityDate = DateTime.now();
-		save();
+		User user = User.find.byId(userId);
+		if (user != null)
+		{
+			user.lastActivityDate = DateTime.now();
+			Ebean.save(user);
+		}
+	}
+	
+	public static long getNumberOfUsers()
+	{
+		return User.find.findRowCount();
+	}
+	
+	public static long getNumberOfWeekNewUsers()
+	{
+		DateTime beginOfWeek = new DateTime().withMillisOfDay(0).minusDays(Math.max(0,DateTime.now().getDayOfWeek() - 1));
+		return User.find.where(Expr.ge("creationDate", beginOfWeek)).findRowCount();
+	}
+	
+	public static long getNumberOfWeekActiveUsers()
+	{
+		DateTime beginOfWeek = new DateTime().withMillisOfDay(0).minusDays(Math.max(0,DateTime.now().getDayOfWeek() - 1));
+		return User.find.where(Expr.ge("lastActivityDate", beginOfWeek)).findRowCount();
 	}
 	
 }

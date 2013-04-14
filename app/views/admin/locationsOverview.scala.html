@@ -1,0 +1,176 @@
+@(locationPage: helpers.Pagination.Page[models.Location], orderBy: String, filter: String)
+
+@setPage(newPage: Int) = @{
+    controllers.admin.routes.LocationManagement.index(newPage, orderBy, filter) 
+}
+
+@toLocationLink(location: Location) = {
+	<a href="@controllers.admin.routes.LocationManagement.displayLocation(location.locationId)">@location.title</a>
+}
+
+@layout.master(title = "KillerBone CP", page = "Locations") {
+	<li>
+		<a href="@controllers.admin.routes.Dashboard.index()">Home</a>
+		<span class="divider">/</span>
+	</li>
+	<li class="active">Locations</li>
+} {
+	@if(flash.containsKey("location.deleted")) {
+		<div class="alert alert-success">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<strong>@flash.get("location.deleted")</strong> has been successfully deleted. 
+		</div> 
+	}
+	<fieldset>
+		<legend>Locations</legend>
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<th style="width: 5%;">Identifier</th>
+					<th style="width: 95%;">Title</th>
+				</tr>
+			</thead>
+			<tbody>
+				@if(locationPage.getList.size == 0) {
+					<tr>
+						<td style="text-align: center;" colspan="2">No locations found.</td>
+					</tr>
+				}
+				@for(location <- locationPage.getList) {
+					<tr>
+						<td>@location.locationId</td>
+						<td style="text-overflow: ellipsis; overflow: hidden;">@toLocationLink(location)</td>					
+					</tr>
+				}
+			</tbody>
+		</table>
+		<table style="width: 100%;">
+			<tr style="vertical-align: top;">
+				<td>
+					<div id="pagination" style="margin: 0px;" class="pagination pull-left">
+						<ul>
+							@if(locationPage.hasPrev) {
+								<li class="prev"><a href="@setPage(locationPage.getPageIndex - 1)">&larr; Previous</a></li> 
+							} else {
+								<li class="prev disabled"><a>&larr; Previous</a></li> 
+							}
+								<li class="current"><a>Displaying @locationPage.getDisplayXtoYofZ</a></li> 
+							@if(locationPage.hasNext) {
+								<li class="next"><a href="@setPage(locationPage.getPageIndex + 1)">Next &rarr;</a></li> 
+							} else {
+								<li class="next disabled"><a>Next &rarr;</a></li> 
+							}
+						</ul>
+					</div>
+				</td>
+				<td>
+					<div class="pull-right">
+				 		<a href="#searchLocationModal" role="button" class="btn" data-toggle="modal">
+				  			<i class="icon-search"></i> Search
+				  		</a>
+				  		@if(orderBy != "" || filter != "") {
+					 		<a href='@controllers.admin.routes.LocationManagement.index(0, "", "")' class="btn">
+					  			<i class="icon-repeat"></i> Reset
+					  		</a>				  		
+				  		}
+				 		<a href="#createLocationModal" role="button" class="btn" data-toggle="modal">
+				  			<i class="icon-plus"></i> Create
+				  		</a>				  		
+					</div>	
+				</td>
+			</tr>
+		</table>
+		<!-- Create Location Modal -->
+		<div id="createLocationModal" class="modal hide fade" style="width:940px;margin-left:-470px;" role="dialog" aria-labelledby="createLocationModal" aria-hidden="true">
+			<div class="modal-header">
+		    	<h3 id="myModalLabel">Create location</h3>
+		  	</div>
+		  	<div class="modal-body">
+		  	<p>Fill in the form and click on send to create a new location.</p>
+		  	<br />
+			@helper.form(action = controllers.admin.routes.LocationManagement.createLocation(), 'id -> "form-createlocation", 'class -> "form-horizontal") {
+				<fieldset>
+					<div class="control-group">
+						<label class="control-label">Title</label>
+						<div class="controls">
+							<input id="title" name="title" type="text" placeholder="" class="input-xxlarge" required="">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">Description</label>
+						<div class="controls">
+							<textarea name="description" id="description" class="input-xxlarge" style="height: 200px;"></textarea>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">Location</label>
+						<div class="controls map-wrapper">
+							<input id="addresspicker_map" style="display: none;" type="text" class="ui-autocomplete-input input-xxlarge" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+							<div id="map" style="height: 300px; width: 400px;"></div>
+							<div style="font-size: 12px;font-style: italic;">You can drag and drop the marker to the correct location</div>							
+							<input type="hidden" id="lat" name="latitude">
+							<input type="hidden" id="lng" name="longitude">
+						</div>
+					</div>					
+				</fieldset>
+			}
+		  	</div>
+		  	<div class="modal-footer">
+				<a id="close-modal" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+		    	<a id="create-location" class="btn btn-primary">Send</a>
+		  	</div>
+		</div>				
+		<!-- Search Location Modal -->
+		<div id="searchLocationModal" class="modal hide fade" role="dialog" aria-labelledby="searchLocationModal" aria-hidden="true">
+			<div class="modal-header">
+		    	<h3 id="myModalLabel">Search</h3>
+		  	</div>
+		  	<div class="modal-body">
+		  	<p>Fill in the form and click on send to search for locations.</p>
+		  	<br />
+		  	<form method="GET" id="form-searchlocation" class="form-horizontal">
+				<fieldset>
+					<div class="control-group">
+						<label class="control-label">Search</label>
+						<div class="controls">
+							<input id="filter" name="filter" type="text" value="@filter" placeholder="" class="input-large" required="">
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label">Orderby</label>
+						<div class="controls">
+							<select id="orderBy" name="orderBy">
+								<option @if(orderBy == "") { selected="selected" } value="">Identifier</option>
+								<option @if(orderBy == "title") { selected="selected" } value="title">Title</option>
+							</select>
+						</div>
+					</div>
+				</fieldset>
+		  	</form>
+		  	</div>
+		  	<div class="modal-footer">
+				<a id="close-modal" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
+		    	<a id="search-location" class="btn btn-primary">Send</a>
+		  	</div>
+		</div>				
+	</fieldset>
+} {
+	jQuery('#search-location').click(function() {
+		jQuery('#form-searchlocation').submit();
+	});
+	jQuery('#create-location').click(function() {
+		jQuery('#form-createlocation').submit();
+	});
+	new wysihtml5.Editor("description", { toolbar: false });
+
+	var addresspickerMap = jQuery("#addresspicker_map").addresspicker({
+		elements: {
+		   	map:      "#map",
+		   	lat:      "#lat",
+		   	lng:      "#lng",
+		}
+	});
+	var gmarker = addresspickerMap.addresspicker("marker");
+	gmarker.setVisible(true);
+	addresspickerMap.addresspicker("updatePosition");	
+}

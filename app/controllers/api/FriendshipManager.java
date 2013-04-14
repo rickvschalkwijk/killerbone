@@ -40,9 +40,9 @@ public class FriendshipManager extends ApiController
 					friendship.status = FriendshipStatus.SENT;						
 				}
 			}
-			user.updateLastActivity();
 			Ebean.save(user.participatedFriendships);
-
+			User.updateLastActivity(userId);
+			
 			friendships.addAll(user.initiatedFriendships);
 			friendships.addAll(user.participatedFriendships);
 			
@@ -83,8 +83,8 @@ public class FriendshipManager extends ApiController
 			{			
 				Friendship newFriendship = new Friendship(initiator, participant);
 				newFriendship.requestDate = DateTime.now();
+				User.updateLastActivity(initiator.userId);
 				
-				initiator.updateLastActivity();
 				Ebean.save(newFriendship);
 				operationSucceeded = (newFriendship.friendshipId != 0);
 			}		
@@ -110,8 +110,7 @@ public class FriendshipManager extends ApiController
 			Ebean.save(friendship);
 			
 			// Update last activity
-			User user = User.find.byId(userId);
-			user.updateLastActivity();
+			User.updateLastActivity(userId);
 			
 			return operationSuccess();
 		}
@@ -130,8 +129,7 @@ public class FriendshipManager extends ApiController
 			Ebean.delete(friendship);
 			
 			// Update last activity
-			User user = User.find.byId(userId);
-			user.updateLastActivity();
+			User.updateLastActivity(userId);
 			
 			return operationSuccess();
 		}
@@ -150,8 +148,7 @@ public class FriendshipManager extends ApiController
 			Ebean.delete(friendship);
 			
 			// Update last activity
-			User user = User.find.byId(userId);
-			user.updateLastActivity();
+			User.updateLastActivity(userId);
 			
 			return operationSuccess();
 		}	
@@ -187,8 +184,7 @@ public class FriendshipManager extends ApiController
 				location.longitude = Double.parseDouble(longitude);
 				
 				// Update last activity
-				User user = User.find.byId(userId);
-				user.updateLastActivity();
+				User.updateLastActivity(userId);
 				
 				Ebean.save(location);
 				operationSucceeded = true;

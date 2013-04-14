@@ -56,7 +56,8 @@ public class UserManagement extends AdminController
 		
 		if (Validator.validateName(name) && Validator.validateEmail(email) && Validator.validatePassword(password))
 		{
-			User newUser = new User(name, email, password, DateTime.now());
+			User newUser = new User(name, email, password);
+			newUser.creationDate = DateTime.now();
 			newUser.isAdmin = !Common.isNullOrEmpty(isAdmin);
 			newUser.isActivated = !Common.isNullOrEmpty(isActivated);
 
@@ -73,7 +74,7 @@ public class UserManagement extends AdminController
 			}
 		}
 
-		flash().put(operationSucceeded ? "user.create.success" : "user.create.failed", "");
+		flash(operationSucceeded ? "user.create.success" : "user.create.failed", "");
 		return redirect(routes.UserManagement.index(1, "", ""));
 	}
 	

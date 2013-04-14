@@ -56,7 +56,15 @@
 					</tr>
 					<tr>
 						<td>Last activity date</td>
-						<td>@user.lastActivityDate.toString("hh:mm a, dd MMMM yyyy")</td>
+						<td>
+							@if(user.lastActivityDate != null) {
+								<span class="timeago" title="@user.lastActivityDate">
+									@user.lastActivityDate.toString("hh:mm a, dd MMMM yyy")
+								</span>
+							} else {
+								-
+							}
+						</td>
 					</tr>
 					<tr>
 						<td>Activated</td>

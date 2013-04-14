@@ -17,7 +17,7 @@ import play.mvc.*;
 import views.xml.api.*;
 
 public class Development extends Controller
-{
+{	
 	public static Result getAllUsers()
 	{
 		List<User> allUsers = User.find.all();
@@ -48,14 +48,25 @@ public class Development extends Controller
 	public static Result generateDummyData()
 	{
 		List<User> users = new ArrayList<User>();
-		User onno = new User("Onno Valkering", "onno@valkering.nl", "valkering", DateTime.now());
+		User onno = new User("Onno Valkering", "onno@valkering.nl", "valkering");
+		onno.creationDate = DateTime.now();
 		onno.isAdmin = true;
+		onno.isActivated = true;
 		users.add(onno);
-		User fons = new User("Fons Eppink", "fons@eppink.nl", "eppink", DateTime.now());
+		
+		User fons = new User("Fons Eppink", "fons@eppink.nl", "eppink");
+		fons.creationDate = DateTime.now();
+		fons.isActivated = true;
 		users.add(fons);		
-		User rick = new User("Rick van Schalkwijk", "rick@vschalkwijk.nl", "vschalkwijk", DateTime.now());
+		
+		User rick = new User("Rick van Schalkwijk", "rick@vschalkwijk.nl", "vschalkwijk");
+		rick.creationDate = DateTime.now();
+		rick.isActivated = true;
 		users.add(rick);
-		User vincent = new User("Vincent Karsten", "vincent@karsten.nl", "karsten", DateTime.now());
+		
+		User vincent = new User("Vincent Karsten", "vincent@karsten.nl", "karsten");
+		vincent.creationDate = DateTime.now();
+		vincent.isActivated = true;
 		users.add(vincent);
 		
 		List<Friendship> friendships = new ArrayList<Friendship>();

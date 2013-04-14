@@ -3,6 +3,7 @@ package helpers;
 import java.util.List;
 
 import models.Event;
+import models.Location;
 import models.User;
 
 import com.avaje.ebean.Ebean;
@@ -31,8 +32,8 @@ public class Pagination
 								 .setMaxRows(pageSize)
 								 .where()
 								 .or(Expr.like("email", "%" + filter + "%"), Expr.like("name", "%" + filter + "%"))
-								 .orderBy(orderBy);
-		
+								 .orderBy(orderBy + (orderBy.equals("lastActivityDate") ? " desc" : ""));
+	
 		// Execute query
 		List<User> users = query.findList();
 		int totalRowCount = query.findRowCount();
@@ -68,6 +69,35 @@ public class Pagination
 		
 		return new Page<Event>(events, totalRowCount, page, pageSize);	
 	}
+	
+	/**
+	 * Creates a pagination page for the location table.
+	 * @param int
+	 * @param int
+	 * @param String
+	 * @param String
+	 * @return Page<Event>
+	 */	
+	public static Page<Location> getLocationPage(int page, int pageSize, String orderBy, String filter)
+	{
+		page = Math.max(page, 1);
+		orderBy = Common.ensureNotNull(orderBy);
+		filter = Common.ensureNotNull(filter);
+		
+		// Compose query
+		Query<Location> query = Ebean.find(Location.class)
+								     .setFirstRow((page - 1) * pageSize)
+								     .setMaxRows(pageSize)
+								     .where()
+								     .like("title", "%" + filter + "%")
+								     .orderBy(orderBy);
+		
+		// Execute query
+		List<Location> locations = query.findList();
+		int totalRowCount = query.findRowCount();
+		
+		return new Page<Location>(locations, totalRowCount, page, pageSize);	
+	}	
 	
 	//-----------------------------------------------------------------------//
 	

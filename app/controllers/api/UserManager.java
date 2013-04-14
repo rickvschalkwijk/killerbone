@@ -1,6 +1,11 @@
 package controllers.api;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+
 import helpers.Common;
+import helpers.Cryptography;
 import models.User;
 import org.joda.time.DateTime;
 import org.w3c.dom.Document;
@@ -13,6 +18,10 @@ import play.Logger;
 import play.libs.XPath;
 import play.mvc.*;
 import helpers.Validator;
+import utils.Mailer;
+import utils.Mailer.MailType;
+import views.html.api.userActivation;
+import views.html.email.welcome;
 import views.xml.api.*;
 
 public class UserManager extends ApiController
@@ -46,18 +55,38 @@ public class UserManager extends ApiController
 			// Validate user information
 			if (Validator.validateName(name) || Validator.validateEmail(email) || Validator.validatePassword(password))
 			{
-				User newUser = new User(name, email, password, DateTime.now());
-				newUser.lastActivityDate = DateTime.now();
+				User newUser = new User(name, email, password);
+				newUser.creationDate = DateTime.now();
 				
 				Ebean.save(newUser);
 				operationSucceeded = (newUser.userId != 0);
+
+				if (operationSucceeded)
+				{
+					sendAccountActivationMail(newUser.userId, email);
+				}
 			}
 		}
 		catch(RuntimeException e)
 		{
 			Logger.error("An error occured while creating user: " + e.getMessage());
 		}
+		catch(UnsupportedEncodingException e)
+		{
+			Logger.error("An error occured while creating user: " + e.getMessage());
+		}
 		return (operationSucceeded ? operationSuccess() : operationFailed());
+	}
+	
+	private static void sendAccountActivationMail(long userId, String email) throws UnsupportedEncodingException
+	{
+		String activationCode = Cryptography.encrypt("activate:" + String.valueOf(userId));
+		String subject = "AmsterGuide - Account Activation";
+		String[] recipients = { email };
+		String body = welcome.render(URLEncoder.encode(activationCode, "UTF-8")).body();
+		
+		Mailer mailer = new Mailer();
+		mailer.sendMail(subject, recipients, body, MailType.HTML);
 	}
 	
 	//-----------------------------------------------------------------------//
@@ -110,4 +139,28 @@ public class UserManager extends ApiController
 		}
 		return operationFailed();
 	}
+	
+	//-----------------------------------------------------------------------//
+	
+	public static Result activateUser(String code) throws UnsupportedEncodingException
+	{
+		code = URLDecoder.decode(code, "UTF-8");
+		String decryptedCode = Cryptography.decrypt(code);
+		if (!Common.isNullOrEmpty(decryptedCode) && Validator.validateActivationCode(decryptedCode))
+		{
+			String userIdPartOfCode = decryptedCode.substring(9);
+			long userId = Long.parseLong(userIdPartOfCode);
+			
+			User user = User.find.byId(userId);
+			if (user != null && !user.isActivated)
+			{
+				user.isActivated = true;
+				user.lastActivityDate = DateTime.now();
+				Ebean.save(user);
+				
+				flash("user.activated", "");
+			}
+		}
+		return ok(userActivation.render());
+	}	
 }

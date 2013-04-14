@@ -1,0 +1,13 @@
+@(locations : List[Location])
+<?xml version="1.0" encoding="UTF-8" ?>
+<locations>
+    @for(location <- locations) {
+		<location id="@location.locationId">
+			<title>@location.title</title>
+			<description>@location.description</description>
+			<latitude>@location.latitude</latitude>
+			<longitude>@location.longitude</longitude>
+			<imageUrl>@location.imageUrl</imageUrl>	
+		</location>
+	} 
+</locations>

@@ -62,9 +62,13 @@
 						</td>
 						<td>@user.email</td>
 						<td>
-							<span class="timeago" title="@user.lastActivityDate">
-								@user.lastActivityDate.toString("hh:mm a, dd MMMM yyy")
-							</span>
+							@if(user.lastActivityDate != null) {
+								<span class="timeago" title="@user.lastActivityDate">
+									@user.lastActivityDate.toString("hh:mm a, dd MMMM yyy")
+								</span>
+							} else {
+								-
+							}
 						</td>
 					</tr>
 				}
@@ -100,7 +104,7 @@
 					  		</a>				  		
 				  		}
 				 		<a href="#createUserModal" role="button" class="btn" data-toggle="modal">
-				  			<i class="icon-plus"></i> Create user
+				  			<i class="icon-plus"></i> Create
 				  		</a>
 					</div>	
 				</td>

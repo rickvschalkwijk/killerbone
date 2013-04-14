@@ -1,0 +1,12 @@
+@layout.master(title = "Account Activation") {
+	<img src="http://localhost:9000/assets/img/placeholder.png" />
+	<hr />
+	<h4>Account activation</h4>
+	@if(flash.containsKey("user.activated")) {
+		<p><strong>Congratulations!</strong> Your AmsterGuide account has been activated, you may now login.</p>
+	} else {
+		<p><strong>Hmm..</strong> It seems that your account is already active or that your activation code is wrong.</p>	
+	}
+} {
+
+}
