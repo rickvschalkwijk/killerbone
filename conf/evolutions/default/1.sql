@@ -15,6 +15,8 @@ create table event (
   longitude                 double,
   is_free                   tinyint(1) default 0,
   price                     varchar(255),
+  thumb_url                 varchar(255),
+  image_url                 varchar(255),
   creation_timestamp        bigint,
   modified_timestamp        bigint,
   constraint uq_event_eventful_id unique (eventful_id),

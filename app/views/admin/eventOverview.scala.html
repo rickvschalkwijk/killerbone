@@ -56,6 +56,15 @@
 							<textarea name="description" class="textarea" rows="10" class="input-xxlarge" style="width: 95%; height: 220px;">@event.description</textarea>
 						</td>
 					</tr>
+					<tr>
+						<td style="vertical-align: top;">Location</td>
+						<td>
+							<input id="addresspicker_map" style="display: none;" type="text" class="ui-autocomplete-input input-xxlarge" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
+							<div id="map" style="height: 320px; width: 95%;"></div>
+							<input type="hidden" value="@event.latitude" id="lat" name="latitude">
+							<input type="hidden" value="@event.longitude" id="lng" name="longitude">						
+						</td>
+					</tr>					
 					@if(event.modifiedTimestamp != 0) {
 						<tr>
 							<td>Modification date</td>
@@ -83,4 +92,16 @@
 	});
 	
 	jQuery('.textarea').wysihtml5();
+	
+	var addresspickerMap = jQuery("#addresspicker_map").addresspicker({
+		draggableMarker: false,
+		elements: {
+		   	map:      "#map",
+		   	lat:      "#lat",
+		   	lng:      "#lng",
+		}
+	});
+	var gmarker = addresspickerMap.addresspicker("marker");
+	gmarker.setVisible(true);
+	addresspickerMap.addresspicker("updatePosition");	
 }

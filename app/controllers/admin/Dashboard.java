@@ -1,7 +1,12 @@
 package controllers.admin;
 
+import helpers.Settings;
+
+import org.joda.time.DateTime;
+
 import controllers.admin.routes;
 import play.mvc.*;
+import utils.EventfulApi;
 import utils.Security.Authorized;
 import views.html.admin.dashboard;
 import views.html.admin.login;
@@ -28,13 +33,21 @@ public class Dashboard extends AdminController
 	
 	//-----------------------------------------------------------------------//
 	
-	public static Result sendTestEmail()
-	{
-		return ok();
-	}
-	
+	@Authorized
 	public static Result repopulateEventDatabase()
 	{
-		return ok();
+		String lastRepopulationTimestamp = Settings.get("eventdatabase.repopulationdate");
+		
+		EventfulApi api = new EventfulApi();
+		if (api.repopulateEvents(lastRepopulationTimestamp))
+		{
+			Settings.set("eventdatabase.repopulationdate", DateTime.now().toString("yyyyMMdd HH:mm"));
+			flash("events.updated", "");
+		}
+		else
+		{
+			flash("events.notupdated", "");
+		}
+		return redirect(routes.Dashboard.index());
 	}
 }

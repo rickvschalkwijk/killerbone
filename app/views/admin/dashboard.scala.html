@@ -1,6 +1,18 @@
 @layout.master(title = "KillerBone CP", page = "Dashboard") {
 	<li class="active">Home</li>
 } {
+@if(flash.containsKey("events.notupdated")) {
+	<div class="alert alert-warning">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+		<strong>Event database</strong> not updated. The database can only be updated every 12 hours.
+	</div> 
+}
+@if(flash.containsKey("events.updated")) {
+	<div class="alert alert-success">
+		<button type="button" class="close" data-dismiss="alert">&times;</button>
+		<strong>Event database</strong> successfully repopulated with up-to-date events.
+	</div> 
+}
 <div class="row-fluid">
 	<div class="span4">
 		<fieldset>
@@ -20,6 +32,7 @@
 					<td style="width: 50%;">@models.User.getNumberOfWeekActiveUsers</td>
 				</tr>				
 			</table>
+			<i>* based on this week.</i>
 		</fieldset>
 	</div>
 	<div class="span4">
@@ -36,14 +49,13 @@
 					<td style="width: 50%;">@utils.EventfulApi.getNumberOfTodayNewEvents</td>
 				</tr>
 			</table>
+			<i>* based on today.</i>
 		</fieldset>
 	</div>
 	<div class="span4">
 		<fieldset>
 			<legend>Actions</legend>
-			<button class="btn">Repopulate event database</button>
-			<br/><br />
-			<button class="btn">Send test email</button>		
+			<a href="@controllers.admin.routes.Dashboard.repopulateEventDatabase()" class="btn">Repopulate event database</a>
 		</fieldset>
 	</div>
 </div>

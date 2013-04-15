@@ -1,5 +1,8 @@
 package controllers.admin;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+
 import javax.persistence.PersistenceException;
 
 import org.joda.time.DateTime;
@@ -10,13 +13,18 @@ import models.User;
 import helpers.Common;
 import helpers.Pagination;
 import helpers.Pagination.Page;
+import helpers.PasswordGenerator;
+import helpers.PasswordHash;
 import helpers.Validator;
 import play.Logger;
 import play.data.DynamicForm;
 import play.mvc.Result;
+import utils.Mailer;
+import utils.Mailer.MailType;
 import utils.Security.Authorized;
 import views.html.admin.userOverview;
 import views.html.admin.usersOverview;
+import views.html.email.password;
 import core.AdminController;
 
 public class UserManagement extends AdminController
@@ -56,13 +64,15 @@ public class UserManagement extends AdminController
 		
 		if (Validator.validateName(name) && Validator.validateEmail(email) && Validator.validatePassword(password))
 		{
-			User newUser = new User(name, email, password);
-			newUser.creationDate = DateTime.now();
-			newUser.isAdmin = !Common.isNullOrEmpty(isAdmin);
-			newUser.isActivated = !Common.isNullOrEmpty(isActivated);
-
 			try
 			{
+				String hashedPassword = PasswordHash.createHash(password);
+				
+				User newUser = new User(name, email, hashedPassword);
+				newUser.creationDate = DateTime.now();
+				newUser.isAdmin = !Common.isNullOrEmpty(isAdmin);
+				newUser.isActivated = !Common.isNullOrEmpty(isActivated);
+				
 				Ebean.save(newUser);	
 				
 				operationSucceeded = true;
@@ -70,6 +80,10 @@ public class UserManagement extends AdminController
 			}
 			catch(PersistenceException e)
 			{
+				Logger.error("An error occured while creating user: " + e.getMessage());
+			} catch (NoSuchAlgorithmException e) {
+				Logger.error("An error occured while creating user: " + e.getMessage());
+			} catch (InvalidKeySpecException e) {
 				Logger.error("An error occured while creating user: " + e.getMessage());
 			}
 		}
@@ -112,12 +126,20 @@ public class UserManagement extends AdminController
 	}
 	
 	@Authorized(redirectToLogin = false)
-	public static Result resetPassword(long userId)
+	public static Result resetPassword(long userId) throws NoSuchAlgorithmException, InvalidKeySpecException
 	{
 		User user = User.find.byId(userId);
 		if (user != null)
 		{
-			// TODO: reset password logic
+			String newPassword = String.valueOf(PasswordGenerator.generatePassword(6, 10, 3, 2, 1));
+			user.password = PasswordHash.createHash(newPassword);
+			Ebean.save(user);
+			
+			Mailer mailer = new Mailer();
+			String subject = "AmsterGuide - Password reset";
+			String[] recipients = { user.email };
+			String body = password.render(newPassword).body();
+			mailer.sendMail(subject, recipients, body, MailType.HTML);
 			
 			flash("user.password-reset", "");
 		}

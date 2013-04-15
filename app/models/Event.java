@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.joda.time.DateTime;
 
 import com.avaje.ebean.validation.Length;
+import com.evdb.javaapi.data.Image;
 
 import play.data.format.Formats;
 import play.db.ebean.Model;
@@ -49,6 +50,11 @@ public class Event extends Model
 	public boolean isFree;
 	public String price;
 	
+	@Length(max = 255)
+	public String thumbUrl;
+	@Length(max = 255)
+	public String imageUrl;
+	
 	public long creationTimestamp;
 	public long modifiedTimestamp;
 	
@@ -84,6 +90,13 @@ public class Event extends Model
 		endDate = (event.getStopTime() != null ? new DateTime(event.getStopTime()) : startDate);
 		price = event.getPrice();
 		isFree = event.isFree();
+		
+		Image firstEventImage = event.getImages().get(0);
+		if (firstEventImage != null)
+		{
+			thumbUrl = (firstEventImage.getThumb() != null ? firstEventImage.getThumb().getUrl() : null);
+			imageUrl = firstEventImage.getUrl();
+		}
 		
 		this.category = category;
 	}

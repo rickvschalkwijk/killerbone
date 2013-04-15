@@ -2,7 +2,6 @@
 
 # Application
 GET     /												controllers.Application.index()
-GET		/eventful/repopulate							controllers.Application.repopulateEventfulContent()
 GET     /assets/*file               					controllers.Assets.at(path="/public", file)
 
 # Authentication
@@ -50,6 +49,7 @@ GET		/activate/user									controllers.api.UserManager.activateUser(code : Stri
 GET		/admin											controllers.admin.Dashboard.index()
 GET		/admin/login									controllers.admin.Dashboard.login()
 GET		/admin/logout									controllers.admin.Dashboard.logout()
+GET		/admin/repopulate/events						controllers.admin.Dashboard.repopulateEventDatabase()
 
 # Admin Event Management
 GET		/admin/events									controllers.admin.EventManagement.index(page: Integer ?= 1, orderBy: String ?= "", filter: String ?="")

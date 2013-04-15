@@ -3,9 +3,12 @@ package controllers.api;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 import helpers.Common;
 import helpers.Cryptography;
+import helpers.PasswordHash;
 import models.User;
 import org.joda.time.DateTime;
 import org.w3c.dom.Document;
@@ -55,7 +58,9 @@ public class UserManager extends ApiController
 			// Validate user information
 			if (Validator.validateName(name) || Validator.validateEmail(email) || Validator.validatePassword(password))
 			{
-				User newUser = new User(name, email, password);
+				String hashedPassword = PasswordHash.createHash(password);
+
+				User newUser = new User(name, email, hashedPassword);
 				newUser.creationDate = DateTime.now();
 				
 				Ebean.save(newUser);
@@ -67,12 +72,13 @@ public class UserManager extends ApiController
 				}
 			}
 		}
-		catch(RuntimeException e)
-		{
+		catch(RuntimeException e) {
 			Logger.error("An error occured while creating user: " + e.getMessage());
-		}
-		catch(UnsupportedEncodingException e)
-		{
+		} catch(UnsupportedEncodingException e) {
+			Logger.error("An error occured while creating user: " + e.getMessage());
+		} catch (NoSuchAlgorithmException e) {
+			Logger.error("An error occured while creating user: " + e.getMessage());
+		} catch (InvalidKeySpecException e) {
 			Logger.error("An error occured while creating user: " + e.getMessage());
 		}
 		return (operationSucceeded ? operationSuccess() : operationFailed());

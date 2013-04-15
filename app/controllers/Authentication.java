@@ -1,5 +1,9 @@
 package controllers;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+
+import helpers.PasswordHash;
 import models.User;
 import org.w3c.dom.Document;
 
@@ -12,7 +16,7 @@ import controllers.admin.routes;
 
 public class Authentication extends Controller
 {
-	public static Result performApiAuthentication()
+	public static Result performApiAuthentication() throws NoSuchAlgorithmException, InvalidKeySpecException
 	{
 		Authenticator authenticator = new Authenticator();
 		Document xmlDocument = request().body().asXml();
@@ -22,8 +26,8 @@ public class Authentication extends Controller
 		String password = XPath.selectText("/user/password", xmlDocument).trim();
 		
 		// Validate user credentials
-		User user = User.find.where().eq("email", email).eq("password", password).findUnique();
-		if (user != null && user.isActivated)
+		User user = User.find.where().eq("email", email).findUnique();
+		if (user != null && PasswordHash.validatePassword(password, user.password) && user.isActivated)
 		{
 			User.updateLastActivity(user.userId);
 			
@@ -36,7 +40,7 @@ public class Authentication extends Controller
 		}		
 	}
 	
-	public static Result performAdminAuthentication()
+	public static Result performAdminAuthentication() throws NoSuchAlgorithmException, InvalidKeySpecException
 	{
 		Authenticator authenticator = new Authenticator();
 		DynamicForm requestData = DynamicForm.form().bindFromRequest();
@@ -46,8 +50,8 @@ public class Authentication extends Controller
 		String password = requestData.get("password");
 		
 		// Validate user credentials
-		User user = User.find.where().eq("email", email).eq("password", password).findUnique();
-		if (user != null && user.isAdmin)
+		User user = User.find.where().eq("email", email).findUnique();
+		if (user != null && PasswordHash.validatePassword(password, user.password) && user.isAdmin)
 		{
 			String authToken = authenticator.generateAuthToken(user.userId, true);
 			session("UserId", String.valueOf(user.userId));
