@@ -13,7 +13,7 @@ import org.w3c.dom.*;
 public class XmlProcessor
 {
 	/**
-	 * Validates a xml document against a xsd.
+	 * Validates an XML document against an XSD.
 	 * @param Document
 	 * @param String
 	 * @return boolean
@@ -45,7 +45,7 @@ public class XmlProcessor
 	}
 	
 	/**
-	 * Converts a xml document to an input-stream.
+	 * Converts an xml document to an input-stream.
 	 * @param Document
 	 * @return InputStream
 	 * @throws Exception

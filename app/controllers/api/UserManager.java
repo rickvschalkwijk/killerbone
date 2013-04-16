@@ -3,12 +3,10 @@ package controllers.api;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 
 import helpers.Common;
 import helpers.Cryptography;
-import helpers.PasswordHash;
+import helpers.Passwords;
 import models.User;
 import org.joda.time.DateTime;
 import org.w3c.dom.Document;
@@ -58,7 +56,7 @@ public class UserManager extends ApiController
 			// Validate user information
 			if (Validator.validateName(name) || Validator.validateEmail(email) || Validator.validatePassword(password))
 			{
-				String hashedPassword = PasswordHash.createHash(password);
+				String hashedPassword = Passwords.createHash(password);
 
 				User newUser = new User(name, email, hashedPassword);
 				newUser.creationDate = DateTime.now();
@@ -75,10 +73,6 @@ public class UserManager extends ApiController
 		catch(RuntimeException e) {
 			Logger.error("An error occured while creating user: " + e.getMessage());
 		} catch(UnsupportedEncodingException e) {
-			Logger.error("An error occured while creating user: " + e.getMessage());
-		} catch (NoSuchAlgorithmException e) {
-			Logger.error("An error occured while creating user: " + e.getMessage());
-		} catch (InvalidKeySpecException e) {
 			Logger.error("An error occured while creating user: " + e.getMessage());
 		}
 		return (operationSucceeded ? operationSuccess() : operationFailed());
@@ -116,7 +110,7 @@ public class UserManager extends ApiController
 			{
 				if (!Common.isNullOrEmpty(name)) { user.name = name.trim(); }
 				if (!Common.isNullOrEmpty(email)) { user.email = email.trim(); }
-				if (!Common.isNullOrEmpty(password)) { user.password = password.trim(); }
+				if (!Common.isNullOrEmpty(password)) { user.hashedPassword = Passwords.createHash(password.trim()); }
 				user.lastActivityDate = DateTime.now();
 				
 				Ebean.save(user);

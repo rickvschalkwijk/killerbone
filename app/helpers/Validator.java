@@ -13,7 +13,7 @@ public class Validator
 	//-----------------------------------------------------------------------//
 	
 	/**
-	 * Validates that a string contains a valid activation code
+	 * Validates that a string contains a valid activation code.
 	 * @param String
 	 * @return boolean
 	 */
@@ -23,7 +23,7 @@ public class Validator
 	}
 	
 	/**
-	 * Validates that a string contains a valid authtoken
+	 * Validates that a string contains a valid authtoken.
 	 * @param String
 	 * @return boolean
 	 */
@@ -73,7 +73,7 @@ public class Validator
 	}
 	
 	/**
-	 * Validates that a string contains a valid latitude or longitude
+	 * Validates that a string contains a valid latitude or longitude.
 	 * @param String
 	 * @return boolean
 	 */

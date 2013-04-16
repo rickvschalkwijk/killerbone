@@ -16,6 +16,15 @@ public class Mailer
 		mailerFromEmail = ConfigFactory.load().getString("smtp.fromEmail");
 	}
 	
+	//-----------------------------------------------------------------------//
+	
+	/**
+	 * Send text or html mail to one of more recipients.
+	 * @param String
+	 * @param String[]
+	 * @param String
+	 * @param MailType
+	 */
 	public void sendMail(String subject, String[] recipients, String body, MailType typeOfEmail)
 	{
 		MailerAPI mail = mailerPlugin.email();

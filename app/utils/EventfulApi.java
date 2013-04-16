@@ -122,7 +122,7 @@ public class EventfulApi
 	}
 	
 	/**
-	 * Initialize the Eventful API with keys and start data
+	 * Initialize the Eventful API with keys and start data.
 	 * @param boolean
 	 */
 	public static void setupEventfulApi(boolean setupCategories)
@@ -145,11 +145,19 @@ public class EventfulApi
 	
 	//-----------------------------------------------------------------------//
 	
+	/**
+	 * Get the amount of events currently stored in the database.
+	 * @return int
+	 */
 	public static int getNumberOfEvents()
 	{
 		return models.Event.find.findRowCount();
 	}
 	
+	/**
+	 * Get the amount of events that where added today.
+	 * @return long
+	 */
 	public static long getNumberOfTodayNewEvents()
 	{
 		long beginOfDayInMillis = new DateTime().withMillisOfDay(0).getMillis();

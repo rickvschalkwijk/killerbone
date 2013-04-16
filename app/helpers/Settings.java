@@ -20,7 +20,7 @@ public class Settings
 	}
 	
 	/**
-	 * Creates or updates a setting based on key/value pair
+	 * Creates or updates a setting based on key/value pair.
 	 * @param key
 	 * @param value
 	 */

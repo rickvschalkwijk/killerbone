@@ -77,7 +77,7 @@ create table user (
   user_id                   bigint auto_increment not null,
   name                      varchar(50),
   email                     varchar(50),
-  password                  varchar(255),
+  hashed_password           varchar(255),
   is_admin                  tinyint(1) default 0,
   is_activated              tinyint(1) default 0,
   last_activity_date        datetime,

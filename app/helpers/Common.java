@@ -33,7 +33,7 @@ public class Common
 	}
 	
 	/**
-	 * Creates a system timestamp
+	 * Creates a system timestamp,
 	 * @return long
 	 */
 	public static long getTimestamp()
@@ -41,7 +41,12 @@ public class Common
 		return System.currentTimeMillis();
 	}
 	
-	public static String timestampToDateTimeString(long timestamp)
+	/**
+	 * Converts a system timestamp to a readable date string,
+	 * @param long
+	 * @return String
+	 */
+	public static String convertTimestampToDateString(long timestamp)
 	{
 		DateTime dateTime = new DateTime(timestamp);
 		return dateTime.toString("hh:mm a, dd MMMM yyy");

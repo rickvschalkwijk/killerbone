@@ -2,18 +2,12 @@
 
 # Application
 GET     /												controllers.Application.index()
+GET		/initialize										controllers.Application.initialize()
 GET     /assets/*file               					controllers.Assets.at(path="/public", file)
 
 # Authentication
 POST	/authenticate/api								controllers.Authentication.performApiAuthentication()
 POST	/authenticate/admin								controllers.Authentication.performAdminAuthentication()
-
-# Development
-GET		/development/allusers							controllers.Development.getAllUsers()
-GET		/development/allfriendships						controllers.Development.getAllFriendships()
-GET		/development/allevents							controllers.Development.getAllEvents()
-GET		/development/allcategories						controllers.Development.getAllCategories()
-GET		/development/generate/dummydata					controllers.Development.generateDummyData()
 
 #-----------------------------------------------------------------------------------------------------#
 

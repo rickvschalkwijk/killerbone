@@ -1,9 +1,6 @@
 package controllers;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-
-import helpers.PasswordHash;
+import helpers.Passwords;
 import models.User;
 import org.w3c.dom.Document;
 
@@ -16,7 +13,7 @@ import controllers.admin.routes;
 
 public class Authentication extends Controller
 {
-	public static Result performApiAuthentication() throws NoSuchAlgorithmException, InvalidKeySpecException
+	public static Result performApiAuthentication()
 	{
 		Authenticator authenticator = new Authenticator();
 		Document xmlDocument = request().body().asXml();
@@ -27,7 +24,7 @@ public class Authentication extends Controller
 		
 		// Validate user credentials
 		User user = User.find.where().eq("email", email).findUnique();
-		if (user != null && PasswordHash.validatePassword(password, user.password) && user.isActivated)
+		if (user != null && Passwords.validatePassword(password, user.hashedPassword) && user.isActivated)
 		{
 			User.updateLastActivity(user.userId);
 			
@@ -40,7 +37,7 @@ public class Authentication extends Controller
 		}		
 	}
 	
-	public static Result performAdminAuthentication() throws NoSuchAlgorithmException, InvalidKeySpecException
+	public static Result performAdminAuthentication()
 	{
 		Authenticator authenticator = new Authenticator();
 		DynamicForm requestData = DynamicForm.form().bindFromRequest();
@@ -51,7 +48,7 @@ public class Authentication extends Controller
 		
 		// Validate user credentials
 		User user = User.find.where().eq("email", email).findUnique();
-		if (user != null && PasswordHash.validatePassword(password, user.password) && user.isAdmin)
+		if (user != null && Passwords.validatePassword(password, user.hashedPassword) && user.isAdmin)
 		{
 			String authToken = authenticator.generateAuthToken(user.userId, true);
 			session("UserId", String.valueOf(user.userId));

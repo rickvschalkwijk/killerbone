@@ -1,8 +1,5 @@
 package controllers.admin;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-
 import javax.persistence.PersistenceException;
 
 import org.joda.time.DateTime;
@@ -13,8 +10,7 @@ import models.User;
 import helpers.Common;
 import helpers.Pagination;
 import helpers.Pagination.Page;
-import helpers.PasswordGenerator;
-import helpers.PasswordHash;
+import helpers.Passwords;
 import helpers.Validator;
 import play.Logger;
 import play.data.DynamicForm;
@@ -66,7 +62,7 @@ public class UserManagement extends AdminController
 		{
 			try
 			{
-				String hashedPassword = PasswordHash.createHash(password);
+				String hashedPassword = Passwords.createHash(password);
 				
 				User newUser = new User(name, email, hashedPassword);
 				newUser.creationDate = DateTime.now();
@@ -80,10 +76,6 @@ public class UserManagement extends AdminController
 			}
 			catch(PersistenceException e)
 			{
-				Logger.error("An error occured while creating user: " + e.getMessage());
-			} catch (NoSuchAlgorithmException e) {
-				Logger.error("An error occured while creating user: " + e.getMessage());
-			} catch (InvalidKeySpecException e) {
 				Logger.error("An error occured while creating user: " + e.getMessage());
 			}
 		}
@@ -126,13 +118,13 @@ public class UserManagement extends AdminController
 	}
 	
 	@Authorized(redirectToLogin = false)
-	public static Result resetPassword(long userId) throws NoSuchAlgorithmException, InvalidKeySpecException
+	public static Result resetPassword(long userId)
 	{
 		User user = User.find.byId(userId);
 		if (user != null)
 		{
-			String newPassword = String.valueOf(PasswordGenerator.generatePassword(6, 10, 3, 2, 1));
-			user.password = PasswordHash.createHash(newPassword);
+			String newPassword = String.valueOf(Passwords.generatePassword(6, 10, 3, 2, 1));
+			user.hashedPassword = Passwords.createHash(newPassword);
 			Ebean.save(user);
 			
 			Mailer mailer = new Mailer();

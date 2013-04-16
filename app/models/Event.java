@@ -97,7 +97,6 @@ public class Event extends Model
 			thumbUrl = (firstEventImage.getThumb() != null ? firstEventImage.getThumb().getUrl() : null);
 			imageUrl = firstEventImage.getUrl();
 		}
-		
 		this.category = category;
 	}
 	

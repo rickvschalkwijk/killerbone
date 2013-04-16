@@ -1,5 +1,5 @@
 @layout.master(title = "Account Activation") {
-	<img src="http://localhost:9000/assets/img/placeholder.png" />
+	<img src='@routes.Assets.at("img/placeholder.png")' />
 	<hr />
 	<h4>Account activation</h4>
 	@if(flash.containsKey("user.activated")) {
@@ -8,5 +8,5 @@
 		<p><strong>Hmm..</strong> It seems that your account is already active or that your activation code is wrong.</p>	
 	}
 } {
-
+	
 }

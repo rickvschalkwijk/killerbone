@@ -4,8 +4,7 @@
     @for(user <- users) {
 		<user id="@user.userId">
 			<name>@user.name</name>
-			<email>@user.email</email>
-			<password>@user.password</password>			
+			<email>@user.email</email>		
 		</user>
 	} 
 </users>

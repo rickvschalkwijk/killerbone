@@ -29,7 +29,7 @@ public class User extends Model
 	public String email;
 
 	@Length(max = 255)
-	public String password;
+	public String hashedPassword;
 
 	public boolean isAdmin;
 	public boolean isActivated;
@@ -52,13 +52,13 @@ public class User extends Model
 		participatedFriendships = new ArrayList<Friendship>();
 	}
 
-	public User(String name, String email, String password)
+	public User(String name, String email, String hashedPassword)
 	{
 		this();
 
 		this.name = name;
 		this.email = email;
-		this.password = password;
+		this.hashedPassword = hashedPassword;
 	}
 
 	// -----------------------------------------------------------------------//
@@ -92,5 +92,4 @@ public class User extends Model
 		DateTime beginOfWeek = new DateTime().withMillisOfDay(0).minusDays(Math.max(0,DateTime.now().getDayOfWeek() - 1));
 		return User.find.where(Expr.ge("lastActivityDate", beginOfWeek)).findRowCount();
 	}
-	
 }
