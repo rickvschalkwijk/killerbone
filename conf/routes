@@ -31,11 +31,10 @@ GET		/locations										controllers.api.LocationManager.getAllLocations()
 GET		/locations/new/:timestamp						controllers.api.LocationManager.getNewLocations(timestamp : Long)
 
 # API User Manager
-GET		/user/:userId									controllers.api.UserManager.getUser(userId : Long)
 POST	/user											controllers.api.UserManager.createUser()
 PUT		/user/:userId									controllers.api.UserManager.updateUser(userId : Long)
 DELETE	/user/:userId									controllers.api.UserManager.deleteUser(userId : Long)
-GET		/activate/user									controllers.api.UserManager.activateUser(code : String ?= "")
+GET		/user/activate/:activationCode					controllers.api.UserManager.activateUser(activationCode : String)
 
 #-----------------------------------------------------------------------------------------------------#
 

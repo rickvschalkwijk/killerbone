@@ -4,6 +4,8 @@ import javax.persistence.PersistenceException;
 
 import org.joda.time.DateTime;
 
+import annotations.Security.Authorized;
+
 import com.avaje.ebean.Ebean;
 import controllers.admin.routes;
 import models.User;
@@ -17,7 +19,6 @@ import play.data.DynamicForm;
 import play.mvc.Result;
 import utils.Mailer;
 import utils.Mailer.MailType;
-import utils.Security.Authorized;
 import views.html.admin.userOverview;
 import views.html.admin.usersOverview;
 import views.html.email.password;

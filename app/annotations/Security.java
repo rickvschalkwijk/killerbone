@@ -1,4 +1,4 @@
-package utils;
+package annotations;
 
 import helpers.Common;
 import helpers.Validator;
@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
 
 import play.mvc.*;
 import play.mvc.Http.*;
+import utils.Authenticator;
 
 import controllers.admin.routes;
 

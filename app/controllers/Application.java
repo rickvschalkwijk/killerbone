@@ -45,6 +45,6 @@ public class Application extends Controller
 			
 			Settings.set("application.initialized", "true");
 		}
-		return ok("KillerBone initialized!");
+		return ok("Application is initialized!");
 	}	
 }

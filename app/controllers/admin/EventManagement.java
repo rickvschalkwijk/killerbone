@@ -1,5 +1,7 @@
 package controllers.admin;
 
+import annotations.Security.Authorized;
+
 import com.avaje.ebean.Ebean;
 
 import helpers.Common;
@@ -8,7 +10,6 @@ import helpers.Pagination.Page;
 import models.Event;
 import play.data.DynamicForm;
 import play.mvc.Result;
-import utils.Security.Authorized;
 import views.html.admin.eventOverview;
 import views.html.admin.eventsOverview;
 import core.AdminController;

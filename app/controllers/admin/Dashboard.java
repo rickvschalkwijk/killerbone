@@ -4,10 +4,11 @@ import helpers.Settings;
 
 import org.joda.time.DateTime;
 
+import annotations.Security.Authorized;
+
 import controllers.admin.routes;
 import play.mvc.*;
 import utils.EventfulApi;
-import utils.Security.Authorized;
 import views.html.admin.dashboard;
 import views.html.admin.login;
 import core.AdminController;

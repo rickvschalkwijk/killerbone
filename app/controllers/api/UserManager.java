@@ -23,24 +23,9 @@ import utils.Mailer;
 import utils.Mailer.MailType;
 import views.html.api.userActivation;
 import views.html.email.welcome;
-import views.xml.api.*;
 
 public class UserManager extends ApiController
 {
-	public static Result getUser(long userId)
-	{
-		if (!isAuthorized(userId)) { return unAuthorized(); }
-		
-		User user = User.find.byId(userId);
-		if (user != null)
-		{
-			return ok(userSingle.render(user).body().trim()).as("text/xml");
-		}
-		return operationFailed();
-	}
-	
-	//-----------------------------------------------------------------------//
-	
 	public static Result createUser()
 	{
 		// Parse required information

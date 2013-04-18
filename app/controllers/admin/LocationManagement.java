@@ -2,6 +2,8 @@ package controllers.admin;
 
 import javax.persistence.PersistenceException;
 
+import annotations.Security.Authorized;
+
 import com.avaje.ebean.Ebean;
 
 import helpers.Common;
@@ -12,7 +14,6 @@ import models.Location;
 import play.Logger;
 import play.data.DynamicForm;
 import play.mvc.Result;
-import utils.Security.Authorized;
 import views.html.admin.locationOverview;
 import views.html.admin.locationsOverview;
 import core.AdminController;
@@ -89,7 +90,7 @@ public class LocationManagement extends AdminController
 		String latitude = requestData.get("latitude");
 		String longitude = requestData.get("longitude");
 		
-		if (location != null && !Common.isNullOrEmpty(title) && !Common.isNullOrEmpty(description) && !Common.isNullOrEmpty(imageUrl) &&
+		if (location != null && !Common.isNullOrEmpty(title) && !Common.isNullOrEmpty(description) &&
 			Validator.validateLatitudeOrLongitude(latitude) && Validator.validateLatitudeOrLongitude(longitude))
 		{
 			location.title = Common.ensureNotNull(title).trim();
