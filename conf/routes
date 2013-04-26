@@ -29,6 +29,8 @@ PUT		/friendship/:friendshipId/location/:userId		controllers.api.FriendshipManag
 # API Location Manager
 GET		/locations										controllers.api.LocationManager.getAllLocations()
 GET		/locations/new/:timestamp						controllers.api.LocationManager.getNewLocations(timestamp : Long)
+GET		/locations/:category							controllers.api.LocationManager.getAllLocationsFromCategory(category : String)
+GET		/locations/:category/new/:timestamp				controllers.api.LocationManager.getNewLocationsFromCategory(category : String, timestamp : Long)
 
 # API User Manager
 POST	/user											controllers.api.UserManager.createUser()

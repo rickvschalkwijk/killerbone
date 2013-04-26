@@ -16,14 +16,17 @@ public class Global extends GlobalSettings
 		// Setup statistics
 		Settings.set("application.startupdate", DateTime.now().toString("hh:mm a, dd MMMM yyy"));
 		
-		// Setup eventful
+		// Setup events
 		EventfulApi.setupEventfulApi(true);
+		
+		// Setup locations
+		Populator.populateLocationCategories();
 	}
 
 	@Override
 	public void onStop(Application app)
 	{
-
+		
 	}
 	
 	@Override

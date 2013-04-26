@@ -1,9 +1,12 @@
 package models;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import play.db.ebean.*;
 
@@ -36,6 +39,9 @@ public class Location extends Model
 	
 	@Column(nullable = true)
 	public long modificationTimestamp;
+	
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
+	public LocationCategory category;
 	
 	public Location()
 	{

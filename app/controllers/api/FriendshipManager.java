@@ -143,7 +143,7 @@ public class FriendshipManager extends ApiController
 		if (!isAuthorized(userId)) { return unAuthorized(); }
 		
 		Friendship friendship = Friendship.find.byId(friendshipId);
-		if (friendship != null && (friendship.initiator.userId == userId ||friendship.participant.userId == userId))
+		if (friendship != null && (friendship.initiator.userId == userId || friendship.participant.userId == userId))
 		{
 			Ebean.delete(friendship);
 			

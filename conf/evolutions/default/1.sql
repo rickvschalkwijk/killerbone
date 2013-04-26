@@ -61,8 +61,16 @@ create table location (
   longitude                 double not null,
   creation_timestamp        bigint not null,
   modification_timestamp    bigint,
+  category_location_category_id bigint,
   constraint uq_location_title unique (title),
   constraint pk_location primary key (location_id))
+;
+
+create table location_category (
+  location_category_id      bigint auto_increment not null,
+  title                     varchar(255),
+  system_name               varchar(255),
+  constraint pk_location_category primary key (location_category_id))
 ;
 
 create table setting (
@@ -96,6 +104,8 @@ alter table friendship_location add constraint fk_friendship_location_user_4 for
 create index ix_friendship_location_user_4 on friendship_location (user_user_id);
 alter table friendship_location add constraint fk_friendship_location_friendship_5 foreign key (friendship_friendship_id) references friendship (friendship_id) on delete restrict on update restrict;
 create index ix_friendship_location_friendship_5 on friendship_location (friendship_friendship_id);
+alter table location add constraint fk_location_category_6 foreign key (category_location_category_id) references location_category (location_category_id) on delete restrict on update restrict;
+create index ix_location_category_6 on location (category_location_category_id);
 
 
 
@@ -112,6 +122,8 @@ drop table friendship;
 drop table friendship_location;
 
 drop table location;
+
+drop table location_category;
 
 drop table setting;
 
