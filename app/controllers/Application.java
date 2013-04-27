@@ -6,6 +6,7 @@ import org.joda.time.DateTime;
 import com.avaje.ebean.Ebean;
 
 import play.mvc.*;
+import utils.Populator;
 
 public class Application extends Controller
 {
@@ -16,7 +17,7 @@ public class Application extends Controller
 	
 	public static Result initialize()
 	{
-		if (Settings.get("application.initialized") != null) 
+		if (Settings.get("application.initialized") == null) 
 		{
 			// Create admin account
 			String hashedAdminPassword = Passwords.createHash("valkering");
@@ -42,6 +43,9 @@ public class Application extends Controller
 			prototype.isActivated = true;
 			Ebean.save(prototype);	
 			Ebean.save(prototype);
+			
+			// Populate locations
+			Populator.populateLocationCategories();			
 			
 			Settings.set("application.initialized", "true");
 		}

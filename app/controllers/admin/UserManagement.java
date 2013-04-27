@@ -39,6 +39,9 @@ public class UserManagement extends AdminController
 		User user = User.find.byId(userId);
 		if (user != null)
 		{
+			//user.initiatedFriendships = null;
+			//user.participatedFriendships = null;
+			
 			return ok(userOverview.render(user));
 		}
 		return redirect(routes.UserManagement.index(1, "", ""));

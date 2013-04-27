@@ -13,6 +13,7 @@ import org.joda.time.DateTime;
 import org.w3c.dom.Document;
 
 import com.avaje.ebean.Ebean;
+import com.avaje.ebean.Expr;
 
 import core.ApiController;
 
@@ -77,16 +78,25 @@ public class FriendshipManager extends ApiController
 			// Get involved users
 			User initiator = User.find.byId(Long.valueOf(initiatorId));
 			User participant = User.find.where().eq("email", participantEmail).findUnique();
-
-			// Create new friendship
+			
 			if (initiator != null && participant != null && initiator.userId != participant.userId)
-			{			
-				Friendship newFriendship = new Friendship(initiator, participant);
-				newFriendship.requestDate = DateTime.now();
-				User.updateLastActivity(initiator.userId);
-				
-				Ebean.save(newFriendship);
-				operationSucceeded = (newFriendship.friendshipId != 0);
+			{		
+				// Check if users don't have an inverse friendship
+				Friendship inverseFriendship = Friendship.find.where()
+															  .and(Expr.eq("initiator_user_id", participant.userId), 
+																   Expr.eq("participant_user_id", initiator.userId))
+															  .findUnique();
+
+				if (inverseFriendship == null)
+				{
+					// Create new friendship
+					Friendship newFriendship = new Friendship(initiator, participant);
+					newFriendship.requestDate = DateTime.now();
+					User.updateLastActivity(initiator.userId);
+					
+					Ebean.save(newFriendship);
+					operationSucceeded = (newFriendship.friendshipId != 0);
+				}
 			}		
 		}
 		catch (RuntimeException e)

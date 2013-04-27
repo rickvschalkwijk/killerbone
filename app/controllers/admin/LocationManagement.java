@@ -1,5 +1,7 @@
 package controllers.admin;
 
+import java.util.List;
+
 import javax.persistence.PersistenceException;
 
 import annotations.Security.Authorized;
@@ -11,6 +13,7 @@ import helpers.Pagination;
 import helpers.Validator;
 import helpers.Pagination.Page;
 import models.Location;
+import models.LocationCategory;
 import play.Logger;
 import play.data.DynamicForm;
 import play.mvc.Result;
@@ -25,7 +28,9 @@ public class LocationManagement extends AdminController
 	public static Result index(int page, String orderBy, String filter)
 	{
 		Page<Location> locations = Pagination.getLocationPage(page, 15, orderBy, filter);
-		return ok(locationsOverview.render(locations, orderBy, filter));
+		List<LocationCategory> categories = LocationCategory.find.all();
+		
+		return ok(locationsOverview.render(locations, categories, orderBy, filter));
 	}
 	
 	@Authorized
@@ -34,7 +39,9 @@ public class LocationManagement extends AdminController
 		Location location = Location.find.byId(locationId);
 		if (location != null)
 		{
-			return ok(locationOverview.render(location));
+			List<LocationCategory> categories = LocationCategory.find.all();
+			
+			return ok(locationOverview.render(location, categories));
 		}
 		return redirect(routes.LocationManagement.index(1, "", ""));
 	}
@@ -47,15 +54,19 @@ public class LocationManagement extends AdminController
 		
 		// Gather required information
 		String title = requestData.get("title");
+		String categoryId = requestData.get("categoryId");
 		String description = requestData.get("description");
 		String latitude = requestData.get("latitude");
 		String longitude = requestData.get("longitude");
 		
-		if (!Common.isNullOrEmpty(title) && !Common.isNullOrEmpty(description) && 
+		LocationCategory category = LocationCategory.find.where().eq("location_category_id", categoryId).findUnique(); 
+		
+		if (!Common.isNullOrEmpty(title) && !Common.isNullOrEmpty(description) && category != null &&
 			Validator.validateLatitudeOrLongitude(latitude) && Validator.validateLatitudeOrLongitude(longitude))
 		{
 			Location newLocation = new Location();
 			newLocation.title = title;
+			newLocation.category = category;
 			newLocation.description = description;
 			newLocation.latitude = Double.parseDouble(latitude);
 			newLocation.longitude = Double.parseDouble(longitude);
@@ -85,15 +96,19 @@ public class LocationManagement extends AdminController
 		Location location = Location.find.byId(locationId);
 		
 		String title = requestData.get("title");
+		String categoryId = requestData.get("categoryId");
 		String description = requestData.get("description");
 		String imageUrl = requestData.get("imageUrl");
 		String latitude = requestData.get("latitude");
 		String longitude = requestData.get("longitude");
 		
-		if (location != null && !Common.isNullOrEmpty(title) && !Common.isNullOrEmpty(description) &&
+		LocationCategory category = LocationCategory.find.where().eq("location_category_id", categoryId).findUnique();
+		
+		if (location != null && !Common.isNullOrEmpty(title) && !Common.isNullOrEmpty(description) && category != null &&
 			Validator.validateLatitudeOrLongitude(latitude) && Validator.validateLatitudeOrLongitude(longitude))
 		{
 			location.title = Common.ensureNotNull(title).trim();
+			location.category = category;
 			location.description = Common.ensureNotNull(description).trim();
 			location.imageUrl = Common.ensureNotNull(imageUrl).trim();
 			location.latitude = Double.parseDouble(latitude);

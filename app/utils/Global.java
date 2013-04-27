@@ -18,9 +18,6 @@ public class Global extends GlobalSettings
 		
 		// Setup events
 		EventfulApi.setupEventfulApi(true);
-		
-		// Setup locations
-		Populator.populateLocationCategories();
 	}
 
 	@Override

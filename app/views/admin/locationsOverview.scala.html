@@ -1,4 +1,4 @@
-@(locationPage: helpers.Pagination.Page[models.Location], orderBy: String, filter: String)
+@(locationPage: helpers.Pagination.Page[models.Location], categories: List[models.LocationCategory], orderBy: String, filter: String)
 
 @setPage(newPage: Int) = @{
     controllers.admin.routes.LocationManagement.index(newPage, orderBy, filter) 
@@ -27,19 +27,21 @@
 			<thead>
 				<tr>
 					<th style="width: 5%;">Identifier</th>
-					<th style="width: 95%;">Title</th>
+					<th style="width: 75%;">Title</th>
+					<th style="width: 20%;">Category</th>
 				</tr>
 			</thead>
 			<tbody>
 				@if(locationPage.getList.size == 0) {
 					<tr>
-						<td style="text-align: center;" colspan="2">No locations found.</td>
+						<td style="text-align: center;" colspan="3">No locations found.</td>
 					</tr>
 				}
 				@for(location <- locationPage.getList) {
 					<tr>
 						<td>@location.locationId</td>
-						<td style="text-overflow: ellipsis; overflow: hidden;">@toLocationLink(location)</td>					
+						<td style="text-overflow: ellipsis; overflow: hidden;">@toLocationLink(location)</td>
+						<td>@if(location.category != null) { @location.category.title } else { - }</td>					
 					</tr>
 				}
 			</tbody>
@@ -97,6 +99,16 @@
 						</div>
 					</div>
 					<div class="control-group">
+						<label class="control-label">Category</label>
+						<div class="controls">
+							<select id="categoryId" name="categoryId">
+								@for(category <- categories) {
+									<option value="@category.locationCategoryId">@category.title</option>
+								}
+							</select>
+						</div>
+					</div>					
+					<div class="control-group">
 						<label class="control-label">Description</label>
 						<div class="controls">
 							<textarea name="description" id="description" class="input-xxlarge" style="height: 200px;"></textarea>
@@ -142,6 +154,7 @@
 							<select id="orderBy" name="orderBy">
 								<option @if(orderBy == "") { selected="selected" } value="">Identifier</option>
 								<option @if(orderBy == "title") { selected="selected" } value="title">Title</option>
+								<option @if(orderBy == "category") { selected="selected" } value="category">Category</option>
 							</select>
 						</div>
 					</div>

@@ -1,8 +1,6 @@
 package controllers.api;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 
 import helpers.Common;
 import helpers.Cryptography;
@@ -66,9 +64,11 @@ public class UserManager extends ApiController
 	private static void sendAccountActivationMail(long userId, String email) throws UnsupportedEncodingException
 	{
 		String activationCode = Cryptography.encrypt("activate:" + String.valueOf(userId));
+		String urlFriendlyActivationCode = Cryptography.toUrlFriendly(activationCode);
+		
 		String subject = "AmsterGuide - Account Activation";
 		String[] recipients = { email };
-		String body = welcome.render(URLEncoder.encode(activationCode, "UTF-8")).body();
+		String body = welcome.render(urlFriendlyActivationCode).body();
 		
 		Mailer mailer = new Mailer();
 		mailer.sendMail(subject, recipients, body, MailType.HTML);
@@ -127,10 +127,10 @@ public class UserManager extends ApiController
 	
 	//-----------------------------------------------------------------------//
 	
-	public static Result activateUser(String code) throws UnsupportedEncodingException
+	public static Result activateUser(String activationCode) throws UnsupportedEncodingException
 	{
-		code = URLDecoder.decode(code, "UTF-8");
-		String decryptedCode = Cryptography.decrypt(code);
+		String encryptedCode = Cryptography.fromUrlFriendly(activationCode);
+		String decryptedCode = Cryptography.decrypt(encryptedCode);
 		if (!Common.isNullOrEmpty(decryptedCode) && Validator.validateActivationCode(decryptedCode))
 		{
 			String userIdPartOfCode = decryptedCode.substring(9);

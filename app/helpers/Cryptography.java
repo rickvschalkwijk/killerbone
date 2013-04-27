@@ -86,6 +86,30 @@ public class Cryptography
 	}
 	
 	/**
+	 * Converts encrypted data to an url friendly format
+	 * @param String
+	 * @return Strings
+	 */
+	public static String toUrlFriendly(String data)
+	{
+		data = data.replace("+", "[P]");
+		data = data.replace("=", "[EQ]");
+		return data;
+	}
+	
+	/**
+	 * Converts url friendly encrypted data back to normal encrypted data
+	 * @param String
+	 * @return String
+	 */
+	public static String fromUrlFriendly(String data)
+	{
+		data = data.replace("[P]", "+");
+		data = data.replace("[EQ]", "=");
+		return data;
+	}
+	
+	/**
 	 * Compiles the key used for cryptography.
 	 * @param String
 	 * @param String

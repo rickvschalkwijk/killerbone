@@ -1,4 +1,4 @@
-@(location: models.Location)
+@(location: models.Location, locationCategories: List[models.LocationCategory])
 
 @layout.master(title = "KillerBone CP", page = "Location") {
 	<li>
@@ -30,7 +30,17 @@
 					<tr>
 						<td>Identifier</td>
 						<td style="width: 75%;">@location.locationId</td>
-					</tr>				
+					</tr>	
+					<tr>
+						<td style="vertical-align: middle;">Category</td>
+						<td style="width: 75%;">
+							<select id="categoryId" name="categoryId" style="margin-bottom: 0px;">
+								@for(category <- locationCategories) {
+									<option @if(location.category.locationCategoryId == category.locationCategoryId) { selected="" } value="@category.locationCategoryId">@category.title</option>
+								}
+							</select>
+						</td>
+					</tr>			
 					<tr>
 						<td style="vertical-align: middle;">Title</td>
 						<td><input type="text" name="title" style="margin: 0px;" class="input-xxlarge" value="@location.title" /></td>
@@ -49,10 +59,9 @@
 						<td style="vertical-align: top;">Location</td>
 						<td>
 							<input id="addresspicker_map" style="display: none;" type="text" class="ui-autocomplete-input input-xxlarge" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true">
-							<div id="map" style="height: 320px; width: 95%;"></div>
-							<div style="font-size: 12px;font-style: italic;">You can drag and drop the marker to the correct location</div>							
-							<input type="hidden" value="@location.latitude" id="lat" name="latitude">
-							<input type="hidden" value="@location.longitude" id="lng" name="longitude">						
+							<div id="map" style="height: 320px; width: 95%; margin-bottom: 5px;"></div>
+							<input type="text" class="input-medium" value="@location.latitude" id="lat" name="latitude" style="margin-bottom: 0px;">
+							<input type="text" class="input-medium" value="@location.longitude" id="lng" name="longitude" style="margin-bottom: 0px;">						
 						</td>
 					</tr>
 					@if(location.modificationTimestamp != 0) {

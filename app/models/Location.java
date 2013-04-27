@@ -40,6 +40,7 @@ public class Location extends Model
 	@Column(nullable = true)
 	public long modificationTimestamp;
 	
+	@Column(nullable = false)
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
 	public LocationCategory category;
 	

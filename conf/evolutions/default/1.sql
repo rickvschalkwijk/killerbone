@@ -73,6 +73,14 @@ create table location_category (
   constraint pk_location_category primary key (location_category_id))
 ;
 
+create table location_review (
+  location_review_id        bigint auto_increment not null,
+  location_location_id      bigint not null,
+  user_user_id              bigint not null,
+  rating                    integer,
+  constraint pk_location_review primary key (location_review_id))
+;
+
 create table setting (
   setting_id                bigint auto_increment not null,
   setting_key               varchar(50),
@@ -106,6 +114,10 @@ alter table friendship_location add constraint fk_friendship_location_friendship
 create index ix_friendship_location_friendship_5 on friendship_location (friendship_friendship_id);
 alter table location add constraint fk_location_category_6 foreign key (category_location_category_id) references location_category (location_category_id) on delete restrict on update restrict;
 create index ix_location_category_6 on location (category_location_category_id);
+alter table location_review add constraint fk_location_review_location_7 foreign key (location_location_id) references location (location_id) on delete restrict on update restrict;
+create index ix_location_review_location_7 on location_review (location_location_id);
+alter table location_review add constraint fk_location_review_user_8 foreign key (user_user_id) references user (user_id) on delete restrict on update restrict;
+create index ix_location_review_user_8 on location_review (user_user_id);
 
 
 
@@ -124,6 +136,8 @@ drop table friendship_location;
 drop table location;
 
 drop table location_category;
+
+drop table location_review;
 
 drop table setting;
 
