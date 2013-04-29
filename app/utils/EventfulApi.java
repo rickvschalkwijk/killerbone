@@ -2,7 +2,6 @@ package utils;
 
 import helpers.Common;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import models.EventCategory;
@@ -127,20 +126,9 @@ public class EventfulApi
 	 */
 	public static void setupEventfulApi(boolean setupCategories)
 	{
-		// Setup Eventful API
 		APIConfiguration.setApiKey(ConfigFactory.load().getString("eventful.token"));
 		APIConfiguration.setEvdbUser(ConfigFactory.load().getString("eventful.user"));
-		APIConfiguration.setEvdbPassword(ConfigFactory.load().getString("eventful.password"));
-		
-		// Setup Eventful Categories
-		if (setupCategories && EventCategory.find.all().size() == 0)
-		{
-			List<EventCategory> categories = new ArrayList<EventCategory>();
-			categories.add(new EventCategory("Music", "music"));
-			categories.add(new EventCategory("Art", "art"));
-			categories.add(new EventCategory("Nightlife", "singles_social"));
-			Ebean.save(categories);
-		}		
+		APIConfiguration.setEvdbPassword(ConfigFactory.load().getString("eventful.password"));	
 	}	
 	
 	//-----------------------------------------------------------------------//

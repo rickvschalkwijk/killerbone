@@ -49,12 +49,13 @@ public class Location extends Model
 		
 	}
 	
-	public Location(String title, String descrition, double latitude, double longitude)
+	public Location(String title, String descrition, double latitude, double longitude, LocationCategory category)
 	{
 		this.title = title;
 		this.description = descrition;
 		this.latitude = latitude;
 		this.longitude = longitude;
+		this.category = category;
 	}
 	
 	//-----------------------------------------------------------------------//
