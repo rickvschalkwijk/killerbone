@@ -136,6 +136,7 @@ public class FriendshipManager extends ApiController
 		Friendship friendship = Friendship.find.byId(friendshipId);
 		if (friendship != null && friendship.participant.userId == userId && friendship.status == FriendshipStatus.SENT)
 		{
+			Ebean.delete(friendship.memberLocations);
 			Ebean.delete(friendship);
 			
 			// Update last activity
@@ -155,6 +156,7 @@ public class FriendshipManager extends ApiController
 		Friendship friendship = Friendship.find.byId(friendshipId);
 		if (friendship != null && (friendship.initiator.userId == userId || friendship.participant.userId == userId))
 		{
+			Ebean.delete(friendship.memberLocations);
 			Ebean.delete(friendship);
 			
 			// Update last activity
