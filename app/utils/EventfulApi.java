@@ -82,6 +82,7 @@ public class EventfulApi
 		for (EventCategory category : allEventCategories)
 		{
 			SearchResult eventSearchResult = performEventSearch(location, category.systemName, dateRange);
+			TranslatorApi translator = new TranslatorApi();
 			
 			// Process events
 			List<Event> events = eventSearchResult.getEvents();
@@ -90,6 +91,7 @@ public class EventfulApi
 				try
 				{
 					models.Event newEvent = new models.Event(event, category);
+					newEvent.description = translator.toEnglish(newEvent.description);
 					newEvent.creationTimestamp = Common.getTimestamp();
 					Ebean.save(newEvent);
 				}
@@ -124,7 +126,7 @@ public class EventfulApi
 	 * Initialize the Eventful API with keys and start data.
 	 * @param boolean
 	 */
-	public static void setupEventfulApi(boolean setupCategories)
+	public static void setupEventfulApi()
 	{
 		APIConfiguration.setApiKey(ConfigFactory.load().getString("eventful.token"));
 		APIConfiguration.setEvdbUser(ConfigFactory.load().getString("eventful.user"));

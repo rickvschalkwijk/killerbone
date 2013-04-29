@@ -17,7 +17,7 @@
 			</initiator>
 			<participant id='@friendship.participant.userId'>
 				<name>@friendship.participant.name</name>
-				<email>@friendship.participant.email</name>
+				<email>@friendship.participant.email</email>
 				@defining(friendship.getMemberLocation(friendship.participant.userId)) { participantLocation =>
 					@if(friendship.status == Friendship.FriendshipStatus.APPROVED && participantLocation != null) {
 						<location refreshDate='@participantLocation.refreshDate.toString("dd-MM-yyyy HH:mm")'>

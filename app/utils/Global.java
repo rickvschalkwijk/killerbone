@@ -16,8 +16,9 @@ public class Global extends GlobalSettings
 		// Setup statistics
 		Settings.set("application.startupdate", DateTime.now().toString("hh:mm a, dd MMMM yyy"));
 		
-		// Setup events
-		EventfulApi.setupEventfulApi(true);
+		// Setup API's
+		EventfulApi.setupEventfulApi();
+		TranslatorApi.setupTranslatorApi();
 	}
 
 	@Override

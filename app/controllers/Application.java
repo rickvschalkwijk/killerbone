@@ -6,7 +6,7 @@ import play.mvc.*;
 
 public class Application extends Controller
 {
-	public static Result index()
+	public static Result index() throws Exception
 	{
 		return ok("Application is online!");
 	}
