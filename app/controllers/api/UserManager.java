@@ -42,6 +42,7 @@ public class UserManager extends ApiController
 				String hashedPassword = Passwords.createHash(password);
 
 				User newUser = new User(name, email, hashedPassword);
+				newUser.isActivated = true;
 				newUser.creationDate = DateTime.now();
 				
 				Ebean.save(newUser);
